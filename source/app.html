@@ -1,0 +1,2643 @@
+<!DOCTYPE html>
+<!--
+© 2026 袁铭 (Yuan Ming). All rights reserved.
+Luminaria v2 — Dual-Core Architecture (Static Anchor + AI Halo)
+Float Mode + Space Mode · FSRS · Emotional Geography
+Note: To avoid CORS warnings when running via file://, the PWA manifest
+and Service Worker are loaded with try/catch fallbacks. They work
+fully when deployed to GitHub Pages or any HTTPS server.
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' file: data: blob: gap: https://fonts.googleapis.com https://fonts.gstatic.com 'unsafe-inline' 'unsafe-eval'; img-src 'self' file: data: blob:;">
+<meta name="theme-color" content="#7A4B5E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Luminaria">
+<meta name="description" content="A serene spatial vocabulary app with FSRS adaptive memory and AI emotional geography.">
+<link rel="manifest" href="static/manifest.json" crossorigin="use-credentials">
+<link rel="icon" type="image/png" sizes="32x32" href="static/icons/favicon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="static/icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="static/icons/icon-512.png">
+<link rel="apple-touch-icon" href="static/icons/apple-touch-icon.png">
+<title>Luminaria · 浮光词集 v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════ CSS Variables & Reset ═══════════ */
+:root{
+  --wine:#8B2252;--rose:#CD5C5C;--gold:#C9A96E;--lavender:#B8A9C9;
+  --cream:#FAF5F0;--ink:#3D2C2C;--mist:#D4C5B0;--slate:#6B7B8D;
+  --pink-lt:#F5E6E8;--pink:#E2C4CB;--mint:#A3C9C0;--sky:#A8C8E0;
+  --shadow:0 4px 24px rgba(122,75,94,0.12);
+  --glass:rgba(251,247,240,0.7);--glass-b:rgba(196,122,139,0.3);
+  --trans:0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+  --ff:'Georgia','Times New Roman',serif;
+  --wdur:15s;--fs:26px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  overflow:hidden;height:100vh;width:100vw;
+  font-family:-apple-system,sans-serif;
+  background:linear-gradient(135deg,#FFF6F0 0%,#FFE8D4 25%,#FFD4B0 50%,#FFE4D0 75%,#FFF8F2 100%);
+  background-size:400% 400%;animation:bgs 45s ease infinite;
+}
+@keyframes bgs{0%{background-position:0% 50%}25%{background-position:50% 0%}50%{background-position:100% 50%}75%{background-position:50% 100%}100%{background-position:0% 50%}}
+
+/* ═══════════ Layout Layers ═══════════ */
+#bg-filter{position:fixed;inset:0;z-index:0;pointer-events:none;backdrop-filter:blur(90px) saturate(0.85);-webkit-backdrop-filter:blur(90px) saturate(0.85);background:rgba(255,255,255,0.12)}
+#caustics{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.08;background:radial-gradient(ellipse 80% 60% at 30% 40%,rgba(255,248,240,0.35),transparent 55%),radial-gradient(ellipse 60% 50% at 70% 60%,rgba(250,240,245,0.25),transparent 55%)}
+#canvas-particles{position:fixed;inset:0;z-index:2;pointer-events:none}
+#float-container{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+#space-canvas{position:fixed;inset:0;z-index:3;display:block;pointer-events:none}
+
+/* ═══════════ Float Mode: Words ═══════════ */
+.wb{
+  position:absolute;pointer-events:auto;white-space:nowrap;
+  font-family:var(--ff);font-size:var(--fs);font-weight:700;
+  letter-spacing:0.6px;text-shadow:0 1px 3px rgba(100,60,75,0.06);
+  will-change:transform,opacity;z-index:10;cursor:pointer;
+  border-radius:4px;transition:filter 0.15s ease;
+  animation-fill-mode:both!important;
+}
+.wb:hover{filter:brightness(1.15)!important;z-index:11}
+
+/* 9 emotion families, color-coded */
+.wb.emotion-transience{color:#B894A8!important}
+.wb.emotion-strength{color:#B8954A!important}
+.wb.emotion-joy{color:#DC8A6E!important}
+.wb.emotion-serenity{color:#7DAE96!important}
+.wb.emotion-melancholy{color:#6B85A0!important}
+.wb.emotion-intellect{color:#6E5494!important}
+.wb.emotion-aggression{color:#A8483A!important}
+.wb.emotion-anxiety{color:#988AA8!important}
+.wb.emotion-healing{color:#6FA382!important}
+
+/* ═══════════ 10 Distinct Float Animations ═══════════ */
+/* Each has ONE primary motion signature for instant visual recognition */
+
+/* 1. Pendulum — gentle rotation oscillation only */
+.wb.a0{animation:a0 var(--wdur) ease-in-out both;transform-origin:center center}
+@keyframes a0{0%{opacity:0;transform:rotate(-18deg)}6%{opacity:.95;transform:rotate(0)}25%{transform:rotate(14deg)}50%{transform:rotate(-10deg)}75%{transform:rotate(6deg)}92%{opacity:.55}100%{opacity:0;transform:rotate(0)}}
+
+/* 2. Bubble Rise — vertical ascent with subtle horizontal sway */
+.wb.a1{animation:a1 var(--wdur) cubic-bezier(.4,0,.6,1) both}
+@keyframes a1{0%{opacity:0;transform:translateY(15vh) scale(.7)}8%{opacity:1;transform:translateY(0) scale(1)}30%{transform:translateY(-18vh) translateX(8px) scale(1.02)}55%{transform:translateY(-32vh) translateX(-6px) scale(1)}80%{opacity:.75;transform:translateY(-46vh) translateX(4px)}100%{opacity:0;transform:translateY(-60vh) scale(.95)}}
+
+/* 3. Ocean Wave — pure horizontal sinusoidal sway */
+.wb.a2{animation:a2 var(--wdur) ease-in-out both}
+@keyframes a2{0%{opacity:0;transform:translateX(-40px)}8%{opacity:1;transform:translateX(0)}20%{transform:translateX(20px)}40%{transform:translateX(-25px)}60%{transform:translateX(18px)}80%{transform:translateX(-12px)}92%{opacity:.5;transform:translateX(5px)}100%{opacity:0;transform:translateX(30px)}}
+
+/* 4. Dandelion — slow spin with gentle ascent */
+.wb.a3{animation:a3 var(--wdur) linear both}
+@keyframes a3{0%{opacity:0;transform:rotate(0deg) translateY(5vh)}8%{opacity:.9;transform:rotate(40deg) translateY(0)}30%{transform:rotate(120deg) translateY(-12vh)}55%{transform:rotate(200deg) translateY(-24vh)}80%{transform:rotate(280deg) translateY(-36vh)}95%{opacity:.3}100%{opacity:0;transform:rotate(360deg) translateY(-48vh)}}
+
+/* 5. Firefly — strong opacity pulse + tiny drift */
+.wb.a4{animation:a4 var(--wdur) ease-in-out both}
+@keyframes a4{0%{opacity:0;transform:translate(0,0)}10%{opacity:1;transform:translate(2px,-3px)}25%{opacity:.35;transform:translate(-1px,-5px)}40%{opacity:1;transform:translate(3px,-10px)}60%{opacity:.4;transform:translate(-2px,-18px)}80%{opacity:.95;transform:translate(1px,-30px)}100%{opacity:0;transform:translate(0,-45px)}}
+
+/* 6. Echo Pulse — pure scale pulse, no translation */
+.wb.a5{animation:a5 var(--wdur) ease-in-out both;transform-origin:center center}
+@keyframes a5{0%{opacity:0;transform:scale(.3)}10%{opacity:.95;transform:scale(1.18)}25%{opacity:.5;transform:scale(.85)}45%{opacity:1;transform:scale(1.08)}65%{opacity:.4;transform:scale(.92)}85%{opacity:.75;transform:scale(1.04)}100%{opacity:0;transform:scale(.4)}}
+
+/* 7. Galaxy Orbit — circular orbital path */
+.wb.a6{animation:a6 var(--wdur) linear both}
+@keyframes a6{0%{opacity:0;transform:rotate(0deg) translateX(0)}10%{opacity:1;transform:rotate(45deg) translateX(25px)}35%{transform:rotate(135deg) translateX(-20px)}65%{transform:rotate(225deg) translateX(28px)}90%{opacity:.7;transform:rotate(310deg) translateX(-15px)}100%{opacity:0;transform:rotate(360deg) translateX(0)}}
+
+/* 8. Kite Soar — sine wave hover, gentle vertical undulation */
+.wb.a7{animation:a7 var(--wdur) ease-in-out both}
+@keyframes a7{0%{opacity:0;transform:translateY(20px)}8%{opacity:1;transform:translateY(0)}25%{transform:translateY(-15px)}50%{transform:translateY(0)}75%{transform:translateY(-10px)}92%{opacity:.55;transform:translateY(-5px)}100%{opacity:0;transform:translateY(-25px)}}
+
+/* 9. Drift & Fade — slow diagonal descent */
+.wb.a8{animation:a8 var(--wdur) ease-in-out both}
+@keyframes a8{0%{opacity:0;transform:translate(-10px,5vh)}8%{opacity:.7;transform:translate(0,0)}25%{transform:translate(15px,-15vh)}50%{transform:translate(-8px,-25vh)}75%{opacity:.45;transform:translate(20px,-38vh)}100%{opacity:0;transform:translate(-15px,-52vh)}}
+
+/* 10. Firework — multi-phase burst, snappy */
+.wb.a9{animation:a9 calc(var(--wdur) * 0.7) cubic-bezier(.34,1.56,.64,1) both;transform-origin:center center}
+@keyframes a9{0%{opacity:0;transform:scale(0)}4%{opacity:1;transform:scale(1.4)}12%{transform:scale(1)}30%{opacity:1;transform:scale(1.05) translateY(-8px)}55%{opacity:.85;transform:scale(.95) translateY(-15px)}80%{opacity:.5;transform:scale(1.02) translateY(-22px)}100%{opacity:0;transform:scale(.6) translateY(-32px)}}
+
+@keyframes twinkle{0%,100%{opacity:0.55}50%{opacity:0.95}}@keyframes twinkle-light{0%,100%{opacity:0.7}50%{opacity:0.85}}
+.space-dot.tw0{animation:twinkle 3.5s ease-in-out 0s infinite}.space-dot.tw1{animation:twinkle 5s ease-in-out 1.2s infinite}.space-dot.tw2{animation:twinkle 4s ease-in-out 2.5s infinite}.space-dot.tw3{animation:twinkle 6s ease-in-out 3.8s infinite}
+/* Kill animations on dim dots: save GPU cycles with will-change containment */
+@media (prefers-reduced-motion: no-preference){.space-dot[style*="opacity:0.18"]{animation:none}}
+@keyframes ringExpand{0%{transform:scale(1);opacity:0.5}100%{transform:scale(2);opacity:0}}
+#space-dom-layer{transform-origin:center center;will-change:transform}
+#space-dom-layer.panning{transform:translate(var(--pan-x,0px),var(--pan-y,0px));transition:none}
+
+/* ═══════════ UI Components ═══════════ */
+/* Stats panel */
+.stats{position:fixed;top:20px;left:20px;z-index:50;display:flex;gap:5px;opacity:0.85;transition:opacity 0.4s;max-width:calc(100vw - 320px)}
+.stats:hover{opacity:1}
+.stats .sc{background:var(--glass);border:1.5px solid var(--glass-b);border-radius:11px;padding:6px 10px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:1px;min-width:64px;transition:var(--trans)}
+.stats .sc:hover{transform:translateY(-2px)}
+.stats .sc .sv{font-family:var(--ff);font-size:20px;font-weight:700;color:var(--wine);line-height:1}
+.stats .sc .sl{font-size:9.5px;color:#8B6F8C;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;font-weight:600}
+.stats .sc .ss{font-size:8.5px;color:var(--rose);opacity:0.8}
+
+/* Brand title */
+.brand{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:49;font-family:'Playfair Display',serif;font-size:13px;font-weight:600;font-style:italic;color:var(--wine);opacity:0.35;letter-spacing:2px;pointer-events:none;transition:all 0.8s}
+body:hover .brand{opacity:0.18}
+
+/* View toggle */
+.view-toggle{position:fixed;top:42px;left:50%;transform:translateX(-50%);z-index:51;display:flex;gap:6px}
+.view-btn{padding:6px 16px;border-radius:20px;border:1px solid rgba(201,169,110,0.4);background:rgba(250,245,240,0.8);font-size:11px;color:var(--ink);cursor:pointer;font-family:-apple-system,sans-serif;transition:all 0.2s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.view-btn:hover{background:rgba(255,255,255,0.95)}
+.view-btn.active{background:var(--wine);color:#fff;border-color:var(--wine)}
+
+/* Buttons */
+.icon-btn{position:fixed;z-index:100;width:50px;height:50px;border-radius:50%;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1.5px solid var(--glass-b);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;color:#8B6F8C;box-shadow:var(--shadow);transition:var(--trans)}
+.icon-btn:hover{transform:scale(1.1);color:var(--rose)}.icon-btn{will-change:transform}
+.icon-btn.small{width:44px;height:44px;font-size:18px}
+
+/* Settings */
+.so{position:fixed;inset:0;z-index:300;background:rgba(61,43,58,0.3);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity 0.4s}
+.so.open{opacity:1;pointer-events:auto}
+.sp{position:fixed;top:50%;right:30px;transform:translateY(-50%);z-index:301;background:linear-gradient(155deg,rgba(255,253,250,0.78),rgba(255,245,240,0.72) 50%,rgba(248,238,238,0.78));backdrop-filter:blur(28px) saturate(1.4);-webkit-backdrop-filter:blur(28px) saturate(1.4);border:1px solid rgba(232,213,163,0.5);border-radius:24px;padding:24px 22px;width:340px;max-height:82vh;overflow-y:auto;box-shadow:0 20px 60px rgba(122,75,94,0.15);opacity:0;pointer-events:none;transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1)}
+.sp.open{opacity:1;pointer-events:auto}
+.sp h3{font-family:var(--ff);font-size:20px;font-weight:600;color:#7A4B5E;text-align:center;margin-bottom:20px;letter-spacing:2px}
+.sg{margin-bottom:16px;padding:12px 14px;background:rgba(255,255,255,0.4);border-radius:14px;border:1px solid rgba(232,213,163,0.25)}
+.sg h4{font-size:10px;color:#A3707D;margin-bottom:8px;text-transform:uppercase;letter-spacing:2px;font-weight:700}
+.settings-section-label{font-size:9px;color:#C9A96E;text-transform:uppercase;letter-spacing:3px;font-weight:700;margin:10px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(201,169,110,0.25)}
+.settings-section-divider{height:1px;background:rgba(196,122,139,0.12);margin:8px 0}
+.ag{display:flex;gap:5px;flex-wrap:wrap;width:100%;justify-content:space-between}
+.ao{padding:7px 10px;border-radius:8px;border:1.5px solid rgba(196,122,139,0.2);background:rgba(255,255,255,0.5);font-size:11px;color:#3D2B3A;cursor:pointer;text-align:center;transition:var(--trans)}
+.ao:hover{background:rgba(255,255,255,0.85);border-color:var(--rose)}
+.ao.ac{background:var(--pink);color:#fff;border-color:var(--rose);font-weight:600}
+select{padding:8px 10px;border-radius:10px;border:1px solid rgba(232,213,163,0.3);background:rgba(255,255,255,0.7);font-size:12px;color:#5B4053;width:100%;outline:none;cursor:pointer}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:linear-gradient(90deg,#C47A8B,#E8D5A3);border-radius:2px;outline:none;margin:6px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid #7A4B5E;cursor:pointer;box-shadow:0 2px 8px rgba(122,75,94,0.3)}
+.rv{font-size:11px;color:#A3707D;margin-left:8px;font-weight:600}
+
+/* Slider row with prominent value chip */
+.slider-row{display:flex;flex-direction:column;gap:6px}
+.slider-row h4{display:flex;align-items:center;justify-content:space-between;margin-bottom:0}
+.slider-chip{display:inline-block;padding:3px 10px;border-radius:10px;background:linear-gradient(135deg,rgba(184,148,168,0.18),rgba(220,138,110,0.18));color:#7A4B5E;font-family:var(--ff);font-size:13px;font-weight:700;letter-spacing:0.5px;min-width:36px;text-align:center;border:1px solid rgba(122,75,94,0.18)}
+.slider-ticks{display:flex;justify-content:space-between;font-size:8px;color:#A3707D;padding:0 2px;margin-top:-2px}
+
+/* Background grid: 8 columns × 3 rows (24 themes) */
+.bg-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;width:100%}
+.bg-swatch{aspect-ratio:1;border-radius:50%;border:1.5px solid rgba(232,213,163,0.4);cursor:pointer;transition:transform 0.2s,border-color 0.2s,box-shadow 0.2s;box-shadow:0 1px 3px rgba(122,75,94,0.1)}
+.bg-swatch:hover{transform:scale(1.18);border-color:rgba(122,75,94,0.5)}
+.bg-swatch.active{border-color:var(--wine);box-shadow:0 0 0 2px rgba(122,75,94,0.3),0 1px 4px rgba(122,75,94,0.2);transform:scale(1.1)}
+
+/* Quiz overlay */
+.qo{position:fixed;inset:0;z-index:99;background:rgba(40,28,36,0.52);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.15s}
+.qo.active{opacity:1;pointer-events:auto}
+.qm{background:var(--glass);backdrop-filter:blur(20px);border:2px solid var(--gold);border-radius:22px;padding:28px 24px;max-width:440px;width:90%;box-shadow:0 8px 48px rgba(107,58,91,0.25);position:relative;text-align:center}
+.qw{font-family:var(--ff);font-size:38px;font-weight:700;color:var(--wine);letter-spacing:1px;margin-bottom:6px}
+.qow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.qob{padding:12px;border-radius:12px;border:1.5px solid var(--glass-b);background:rgba(255,255,255,0.6);font-size:14px;color:var(--wine);cursor:pointer;transition:transform 0.12s,background 0.15s,border-color 0.15s,color 0.15s;will-change:transform}
+.qob:hover{background:rgba(255,255,255,0.92);border-color:var(--rose);transform:translateY(-1px)}
+.qob:active{transform:scale(0.97)}
+.qob:hover{background:rgba(255,255,255,0.92);border-color:var(--rose);transform:translateY(-1px)}
+.qob.ok{background:#E8F5E9!important;border-color:#4CAF50!important;color:#2E7D32!important}
+.qob.ng{background:#FFEBEE!important;border-color:#EF5350!important;color:#C62828!important}
+.qc{position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;color:#8B6F8C;cursor:pointer;opacity:0.6;transition:opacity 0.15s,transform 0.15s}
+.qc:hover{opacity:1;transform:scale(1.2)}
+.qh{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:8px}
+.spkr{background:none;border:1.5px solid var(--glass-b);border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;transition:var(--trans);display:inline-flex;align-items:center;justify-content:center}
+.spkr:hover{background:rgba(255,255,255,0.9);border-color:var(--rose);transform:scale(1.15)}
+.qmeta{margin-bottom:10px;font-size:11px;text-align:center}
+.mbadge{background:var(--mint);color:#2E7D32;border-radius:10px;padding:3px 10px;font-size:10px}
+
+/* Toast */
+.toast{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:200;padding:12px 28px;border-radius:24px;background:var(--glass);backdrop-filter:blur(20px);border:1.5px solid var(--glass-b);box-shadow:var(--shadow);font-size:14px;color:var(--wine);opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* Progress bar */
+.pg-bar{position:fixed;bottom:24px;left:20px;z-index:48;background:var(--glass);backdrop-filter:blur(18px);border:1.5px solid var(--glass-b);border-radius:16px;padding:12px 14px 9px;box-shadow:var(--shadow);min-width:280px;max-width:310px}
+
+/* Achievement */
+.achv{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:150;background:var(--glass);backdrop-filter:blur(24px);border:2px solid var(--gold);border-radius:24px;padding:20px 32px;text-align:center;opacity:0;pointer-events:none;transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1)}
+.achv.show{opacity:1;transform:translate(-50%,-60%)}
+
+/* Cheer bubble */
+.sb{position:fixed;bottom:100px;right:90px;z-index:55;background:var(--glass);backdrop-filter:blur(16px);border:1.5px solid var(--glass-b);border-radius:16px;padding:10px 16px;font-size:13px;color:var(--wine);font-family:var(--ff);letter-spacing:0.3px;box-shadow:var(--shadow);opacity:0;transform:translateY(8px);pointer-events:none;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);max-width:200px;text-align:center}
+.sb.show{opacity:1;transform:translateY(0)}
+
+/* Float Mode color guide — persistent bottom-right legend */
+.float-guide{position:fixed;bottom:24px;right:24px;z-index:47;background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1.5px solid var(--glass-b);border-radius:14px;padding:12px 14px 10px;box-shadow:var(--shadow);font-family:-apple-system,sans-serif;width:186px;transition:opacity 0.4s}
+.float-guide .fg-title{font:600 10px Georgia,serif;color:var(--wine);letter-spacing:1px;margin-bottom:8px;text-align:center}
+.float-guide .fg-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin-bottom:8px}
+.float-guide .fg-item{display:flex;align-items:center;gap:5px;font-size:9.5px;color:#5B4053}
+.float-guide .fg-swatch{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+/* Depth Probe panel (in Space Mode) */
+#depth-probe{position:fixed;z-index:60;background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border:1px solid var(--gold);border-radius:16px;width:320px;box-shadow:0 20px 60px rgba(61,44,44,0.15);opacity:0;transform:scale(0.9);pointer-events:none;transition:all 0.3s cubic-bezier(0.16,1,0.3,1);overflow:hidden}
+#depth-probe.active{opacity:1;transform:scale(1);pointer-events:auto}
+#depth-probe .probe-header{background:linear-gradient(135deg,var(--wine),var(--rose));padding:18px 20px;color:#fff}
+#depth-probe .probe-header .pw{font-size:26px;font-weight:600}
+#depth-probe .probe-header .pp{font-size:12px;opacity:0.8;margin-top:2px}
+#depth-probe .probe-header .pcn{font-size:13px;opacity:0.9;margin-top:3px}
+#depth-probe .probe-body{padding:16px 20px}
+#depth-probe .probe-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+#depth-probe .probe-tag{padding:3px 10px;border-radius:14px;font-size:10px;border:1px solid}
+#depth-probe .depth-bar{height:4px;border-radius:2px;background:rgba(61,44,44,0.08);overflow:hidden;margin:8px 0 4px}
+#depth-probe .depth-fill{height:100%;border-radius:2px;transition:width 0.6s ease}
+#depth-probe .depth-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--slate);margin-bottom:10px}
+#depth-probe .probe-neighbors{margin-top:10px}
+#depth-probe .probe-neighbors .nl{font-size:10px;color:var(--slate);margin-bottom:4px}
+#depth-probe .neighbor-list{display:flex;gap:4px;flex-wrap:wrap}
+#depth-probe .neighbor-chip{padding:2px 8px;border-radius:12px;font-size:10px;cursor:pointer;opacity:0.7;transition:all 0.15s}
+#depth-probe .neighbor-chip:hover{opacity:1;transform:scale(1.05)}
+#depth-probe .probe-close{position:absolute;top:10px;right:12px;width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* Scrollbar */
+.sp::-webkit-scrollbar{width:4px}.sp::-webkit-scrollbar-track{background:transparent}.sp::-webkit-scrollbar-thumb{background:var(--pink);border-radius:2px}
+
+/* ═══════════ Wordbook ═══════════ */
+.wbk-panel{position:fixed;top:120px;left:20px;z-index:102;width:280px;max-height:62vh;background:linear-gradient(160deg,rgba(255,253,250,0.86),rgba(248,240,240,0.78) 60%,rgba(240,228,228,0.84));backdrop-filter:blur(24px) saturate(1.35);-webkit-backdrop-filter:blur(24px) saturate(1.35);border:1px solid rgba(232,213,163,0.5);border-radius:18px;box-shadow:0 16px 48px rgba(122,75,94,0.18);overflow:hidden;opacity:0;pointer-events:none;transform:scale(0.92) translateY(-6px);transition:opacity 0.32s,transform 0.32s cubic-bezier(0.34,1.56,0.64,1);font-family:-apple-system,sans-serif;display:flex;flex-direction:column;cursor:default}
+.wbk-panel.open{opacity:1;pointer-events:auto;transform:scale(1) translateY(0)}
+.wbk-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;border-bottom:1px solid rgba(232,213,163,0.25);background:rgba(255,255,255,0.25);cursor:grab;user-select:none;-webkit-user-select:none;flex-shrink:0}
+.wbk-head:active{cursor:grabbing}
+.wbk-title{font-family:var(--ff);font-size:14px;color:#7A4B5E;letter-spacing:1px;display:flex;align-items:center;gap:6px;font-weight:600}
+.wbk-badge{background:rgba(196,122,139,0.18);color:#7A4B5E;font-size:10px;padding:2px 7px;border-radius:8px;font-weight:700;letter-spacing:0.5px}
+.wbk-close{background:none;border:none;width:24px;height:24px;border-radius:50%;font-size:14px;color:#A3707D;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;line-height:1;padding:0}
+.wbk-close:hover{background:rgba(196,122,139,0.18);color:#7A4B5E;transform:rotate(90deg)}
+.wbk-list-wrap{flex:1;overflow-y:auto;padding:10px 12px 12px}
+.wbk-list-wrap::-webkit-scrollbar{width:3px}
+.wbk-list-wrap::-webkit-scrollbar-track{background:transparent}
+.wbk-list-wrap::-webkit-scrollbar-thumb{background:var(--pink);border-radius:2px}
+.wbk-empty{padding:28px 12px;text-align:center;color:#A3707D;font-size:12px;line-height:1.7;opacity:0.75}
+.wbk-empty .ei{font-size:28px;margin-bottom:6px;opacity:0.5}
+.wbk-item{display:flex;align-items:center;gap:8px;padding:8px 10px;margin-bottom:6px;background:rgba(255,255,255,0.5);border-radius:10px;border:1px solid rgba(232,213,163,0.2);transition:all 0.25s;cursor:default}
+.wbk-item:hover{background:rgba(255,255,255,0.8);border-color:rgba(196,122,139,0.3);transform:translateX(2px)}
+.wbk-item .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.wbk-item.wrong .dot{background:#C47A8B}
+.wbk-item.saved .dot{background:#A3C9C0}
+.wbk-item .info{flex:1;min-width:0}
+.wbk-item .word{font-family:var(--ff);font-size:13px;font-weight:600;color:#5B4053;line-height:1.2}
+.wbk-item.saved .word{color:#3D6B50}
+.wbk-item .mean{font-size:10px;color:#A3707D;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.wbk-item .x{width:20px;height:20px;border-radius:50%;border:none;background:rgba(196,122,139,0.1);color:#C47A8B;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
+.wbk-item .x:hover{background:rgba(196,122,139,0.25);color:#fff}
+
+/* ═══════════ Share Card ═══════════ */
+.share-card{position:fixed;inset:0;z-index:199;background:rgba(61,43,58,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.4s}
+.share-card.open{opacity:1;pointer-events:auto}
+.share-inner{background:linear-gradient(145deg,#FFF8DC,#FADADD 50%,#D4A5C9);border-radius:24px;padding:20px 24px;max-width:500px;width:95%;box-shadow:0 16px 64px rgba(107,58,91,0.3);border:2px solid var(--gold);text-align:center;position:relative;overflow-y:auto;max-height:95vh}
+.share-inner canvas{border-radius:16px;box-shadow:0 8px 32px rgba(107,58,91,0.2);display:block;margin:0 auto;max-width:100%;height:auto}
+.share-btns{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.share-btn-s{background:var(--wine);color:#fff;border:none;padding:10px 24px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:var(--trans)}
+.share-btn-s:hover{background:var(--rose);transform:translateY(-2px)}
+.share-btn-c{background:transparent;color:#8B6F8C;border:1.5px solid var(--glass-b);padding:10px 24px;border-radius:20px;cursor:pointer;font-size:13px;transition:var(--trans)}
+.share-btn-c:hover{background:rgba(255,255,255,0.5)}
+
+/* ═══════════ PWA Install + Splash ═══════════ */
+.pwa-install{position:fixed;top:120px;right:24px;z-index:101;width:44px;height:44px;border-radius:50%;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid var(--glass-b);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:300;color:#8B6F8C;box-shadow:var(--shadow);transition:var(--trans)}
+.pwa-install:hover{transform:scale(1.1);color:var(--rose);background:rgba(196,122,139,0.15)}
+.pwa-splash{position:fixed;inset:0;z-index:300;background:linear-gradient(135deg,#FBF7F0,#FAF3F0 50%,#F5EEEB);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.6s ease}
+.pwa-splash.show{opacity:1;pointer-events:auto}
+.pwa-splash-inner{text-align:center;animation:pwaRise 1.2s cubic-bezier(0.25,0.46,0.45,0.94)}
+.pwa-splash-icon{font-size:64px;margin-bottom:12px;filter:drop-shadow(0 4px 20px rgba(196,122,139,0.3))}
+.pwa-splash-title{font-family:'Playfair Display',serif;font-size:32px;font-weight:600;font-style:italic;color:var(--wine);letter-spacing:3px;margin-bottom:4px}
+.pwa-splash-sub{font-size:13px;color:#8B6F8C;letter-spacing:6px;opacity:0.7}
+@keyframes pwaRise{0%{transform:translateY(20px);opacity:0}100%{transform:translateY(0);opacity:1}}
+
+/* ═══════════ Color Guide (replaces FSRS palette) ═══════════ */
+.color-guide{font-family:-apple-system,sans-serif}
+
+/* ═══════════ Responsive — Tablet / Small screens ≤ 768px ═══════════ */
+@media(max-width:768px){
+  /* Stats: compact horizontal row, scrollable */
+  .stats{top:10px;left:8px;right:8px;max-width:100vw;gap:4px;overflow-x:auto;flex-wrap:nowrap;padding:0 4px;-webkit-overflow-scrolling:touch}
+  .stats .sc{min-width:50px;padding:4px 7px;border-radius:8px}
+  .stats .sc .sv{font-size:16px}
+  .stats .sc .sl{font-size:8px;letter-spacing:0.3px}
+  .stats .sc .ss{font-size:7px}
+
+  /* Brand: smaller, higher */
+  .brand{top:80px;font-size:10px;letter-spacing:1px}
+
+  /* View toggle: stay between stats and buttons */
+  .view-toggle{top:80px;gap:4px}
+  .view-btn{padding:5px 12px;font-size:10px;border-radius:16px}
+
+  /* Icon buttons: reposition for mobile */
+  #btn-settings{top:10px;right:8px;width:38px;height:38px;font-size:17px}
+  #btn-lang{top:10px;right:52px;width:38px;height:38px;font-size:17px}
+  #btn-wordbook{top:70px;left:8px;width:38px;height:38px;font-size:16px}
+
+  /* Settings panel: full width from right on mobile */
+  .sp{right:4px;width:calc(100vw - 16px);max-width:360px;border-radius:20px 20px 12px 12px;padding:18px 14px;max-height:75vh}
+  .sp h3{font-size:17px;margin-bottom:14px}
+  .sg{padding:10px 10px;margin-bottom:12px;border-radius:10px}
+  .sg h4{font-size:9px;margin-bottom:6px}
+  .ao{padding:6px 8px;font-size:10px;border-radius:6px}
+  select{font-size:11px;padding:7px 8px}
+  .ag{gap:3px}
+
+  /* Quiz: compact */
+  .qm{padding:20px 16px;border-radius:18px;max-width:95vw}
+  .qw{font-size:28px}
+  .qow{gap:6px}
+  .qob{padding:10px 8px;font-size:13px;border-radius:10px}
+  .spkr{width:30px;height:30px;font-size:14px}
+  .qc{top:8px;right:10px;font-size:17px}
+
+  /* Progress bar: bottom compact */
+  .pg-bar{bottom:12px;left:8px;right:8px;min-width:0;max-width:none;width:auto;border-radius:12px;padding:10px 12px 8px}
+
+  /* Toast: smaller, top center */
+  .toast{top:60px;font-size:12px;padding:10px 20px;border-radius:20px}
+
+  /* Cheer bubble: adjust position */
+  .sb{bottom:80px;right:16px;max-width:160px;font-size:11px;padding:8px 12px}
+
+  /* Achievement: smaller */
+  .achv{padding:16px 24px;border-radius:18px}
+
+  /* Wordbook: full-width overlay on mobile */
+  .wbk-panel{top:auto;bottom:0;left:0;right:0;width:100vw;max-height:55vh;border-radius:18px 18px 0 0;transform:translateY(100%)}
+  .wbk-panel.open{transform:translateY(0)}
+  .wbk-head{padding:10px 14px 8px}
+  .wbk-title{font-size:13px}
+  .wbk-item .word{font-size:12px}
+  .wbk-item .mean{font-size:9px}
+
+  /* PWA install: reposition */
+  .pwa-install{top:70px;right:100px;width:38px;height:38px}
+
+  /* Depth probe: full width */
+  #depth-probe{width:calc(100vw - 20px);max-width:320px;left:10px!important;border-radius:14px}
+  #depth-probe .probe-header{padding:14px 16px}
+  #depth-probe .probe-header .pw{font-size:22px}
+  #depth-probe .probe-body{padding:12px 16px}
+
+  /* Float guide: compact */
+  .float-guide{bottom:12px;right:8px;padding:8px 10px 6px;width:140px;border-radius:10px}
+  .float-guide .fg-grid{gap:2px 6px}
+  .float-guide .fg-item{font-size:8.5px}
+
+  /* Space legend: bottom-left for mobile */
+  #space-legend-panel{bottom:80px;right:8px;padding:10px 14px;font-size:10px;border-radius:10px}
+  #space-legend-panel div[style*="grid"]{gap:4px 8px;font-size:9px}
+
+  /* Space axis labels: hide on small screens (too cramped) */
+  #space-axis,#space-axis-v{display:none}
+
+  /* Space welcome card: narrower */
+  #space-welcome{top:80px;max-width:90vw;padding:12px 18px;font-size:11px}
+  #space-welcome div[style*="18px"]{font-size:15px!important}
+
+  /* Share card: compact */
+  .share-inner{padding:14px 12px}
+  .share-btn-s,.share-btn-c{padding:8px 16px;font-size:11px}
+
+  /* PWA splash: smaller text */
+  .pwa-splash-title{font-size:24px}
+  .pwa-splash-sub{font-size:10px;letter-spacing:4px}
+
+  /* Float words: smaller on mobile */
+  .wb{font-size:calc(var(--fs) * 0.75)!important}
+
+  /* Safe area for iPhone notch */
+  body{padding-top:env(safe-area-inset-top,0);padding-bottom:env(safe-area-inset-bottom,0);padding-left:env(safe-area-inset-left,0);padding-right:env(safe-area-inset-right,0)}
+}
+
+/* ═══════════ Responsive — Extra Small ≤ 480px ═══════════ */
+@media(max-width:480px){
+  .stats{gap:3px}
+  .stats .sc{min-width:44px;padding:3px 5px;border-radius:6px}
+  .stats .sc .sv{font-size:14px}
+  .stats .sc .sl{font-size:7px}
+  .stats .sc .ss{display:none}
+
+  .brand{top:72px;font-size:9px;opacity:0.25}
+
+  .view-toggle{top:72px}
+
+  .qm{padding:16px 12px}
+  .qw{font-size:24px}
+  .qob{padding:8px 6px;font-size:12px}
+  .qob:hover{transform:none}
+
+  .sp{border-radius:16px 16px 8px 8px;padding:14px 10px}
+
+  .toast{top:56px;font-size:11px;padding:8px 16px}
+
+  .pg-bar{padding:8px 10px 6px;border-radius:10px}
+
+  .wbk-panel{max-height:50vh}
+
+  /* Float guide: more compact */
+  .float-guide{padding:6px 8px 4px;width:120px}
+  .float-guide .fg-item{font-size:7.5px}
+
+  /* Space legend even smaller */
+  #space-legend-panel{padding:8px 10px;border-radius:8px}
+  #space-legend-panel div[style*="grid"]{gap:2px 6px;font-size:8px}
+
+  /* Cheer bubble: compact */
+  .sb{right:8px;max-width:140px;font-size:10px}
+
+  /* Achievement: compact */
+  .achv{padding:12px 18px}
+  .achv div[style*="48px"]{font-size:36px!important}
+
+  /* Space dots: slightly smaller hit areas */
+  .space-dot{transition:transform 0.12s cubic-bezier(0.34,1.56,0.64,1)!important}
+
+  /* Quiz options: stack on very small screens */
+  .qow{grid-template-columns:1fr}
+
+  /* Settings: full width */
+  .sp{width:calc(100vw - 8px);right:4px}
+  .ao{padding:5px 6px;font-size:9px}
+
+  /* Background grid: 6 cols on very small screens (24/6=4 rows) */
+  .bg-grid{grid-template-columns:repeat(6,1fr);gap:5px}
+
+  /* Hide brand on very small screens */
+  .brand{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ Background Layers ═══════════ -->
+<div id="bg-filter"></div>
+<div id="caustics"></div>
+<canvas id="canvas-particles"></canvas>
+
+<!-- ═══════════ Float Mode Container ═══════════ -->
+<div id="float-container"></div>
+
+<!-- ═══════════ Space Mode Canvas ═══════════ -->
+<canvas id="space-canvas"></canvas>
+
+<!-- ═══════════ Brand Title ═══════════ -->
+<div class="brand" id="brand-title">Luminaria</div>
+
+<!-- ═══════════ View Toggle ═══════════ -->
+<div class="view-toggle" id="view-toggle">
+  <button class="view-btn active" data-view="float">🌊 Float</button>
+  <button class="view-btn" data-view="space">🌌 Space</button>
+</div>
+
+<!-- ═══════════ Stats Panel ═══════════ -->
+<div class="stats" id="stats">
+  <div class="sc"><div class="sv" id="st-today">0</div><div class="sl" data-stat="Today">Today</div><div class="ss" data-stat="Reviewed">learned</div></div>
+  <div class="sc"><div class="sv" id="st-acc">-</div><div class="sl" data-stat="Acc.">Accuracy</div><div class="ss" data-stat="Rate">correct rate</div></div>
+  <div class="sc"><div class="sv" id="st-streak">0</div><div class="sl" data-stat="Streak">Streak</div><div class="ss" data-stat="Days">days</div></div>
+  <div class="sc"><div class="sv" id="st-total">0</div><div class="sl" data-stat="Vocab">Vocab</div><div class="ss" data-stat="Words seen">words seen</div></div>
+  <div class="sc" id="sc-review" style="cursor:pointer"><div class="sv" id="st-due">0</div><div class="sl" data-stat="Today review">Today review</div><div class="ss" data-stat="Due words">due words</div></div>
+  <div class="sc" id="sc-wrong" style="cursor:pointer"><div class="sv" id="st-wrong">0</div><div class="sl" data-stat="Wrong">Wrong</div><div class="ss" data-stat="To review">to review</div></div>
+</div>
+
+<!-- ═══════════ Buttons ═══════════ -->
+<button class="icon-btn" id="btn-settings" style="top:24px;right:24px" title="Settings">⚙</button>
+<button class="icon-btn" id="btn-lang" style="top:24px;right:90px" title="Language">🌐</button>
+<button class="icon-btn small" id="btn-wordbook" style="top:120px;left:20px" title="Wordbook">📖</button>
+
+<!-- ═══════════ Wordbook Panel ═══════════ -->
+<div class="wbk-panel" id="wbk-panel">
+  <div class="wbk-head" id="wbk-head">
+    <div class="wbk-title">📖 <span id="wbk-title-text">My Words</span><span class="wbk-badge" id="wbk-count-badge" style="display:none">0</span></div>
+    <button class="wbk-close" id="wbk-close">✕</button>
+  </div>
+  <div class="wbk-list-wrap" id="wbk-list-wrap"><div id="wbk-list"></div></div>
+</div>
+
+<!-- ═══════════ Share Card ═══════════ -->
+<div class="share-card" id="share-card"></div>
+
+<!-- ═══════════ PWA Splash & Install ═══════════ -->
+<button class="pwa-install" id="pwa-install" style="display:none" title="Install App">＋</button>
+<div class="pwa-splash" id="pwa-splash"><div class="pwa-splash-inner"><div class="pwa-splash-icon">📖</div><div class="pwa-splash-title">Luminaria</div><div class="pwa-splash-sub">浮光词集</div></div></div>
+
+<!-- ═══════════ Settings Overlay ═══════════ -->
+<div class="so" id="settings-overlay"></div>
+<div class="sp" id="settings-panel">
+  <h3>☆ Settings ☆</h3>
+  <div class="sg"><h4 data-i18n="Word Bank">Word Bank</h4><select id="sel-bank"></select></div>
+  <div class="sg"><h4 data-i18n="Background">Background</h4><div class="bg-grid" id="bg-grid"></div></div>
+  <div class="settings-section-divider"></div>
+  <div class="settings-section-label" id="section-float-label" data-i18n="Float Mode" data-i18n-zh="Float 模式">Float Mode</div>
+  <div class="sg"><h4 data-i18n="Animation Mode">Animation Mode</h4><div class="ag" id="anim-grid"></div></div>
+  <div class="sg slider-row"><h4 data-i18n="Speed">Speed</h4><div class="slider-chip" id="speed-val">3</div><input type="range" id="speed-slider" min="1" max="10" value="3" step="1" list="speed-ticks"><datalist id="speed-ticks"><option value="1"><option value="3"><option value="5"><option value="7"><option value="10"></datalist><div class="slider-ticks"><span>1</span><span>3</span><span>5</span><span>7</span><span>10</span></div></div>
+  <div class="sg slider-row"><h4 data-i18n="Density">Density</h4><div class="slider-chip" id="density-val">12</div><input type="range" id="density-slider" min="5" max="35" value="12" step="1" list="density-ticks"><datalist id="density-ticks"><option value="5"><option value="12"><option value="20"><option value="28"><option value="35"></datalist><div class="slider-ticks"><span>5</span><span>12</span><span>20</span><span>28</span><span>35</span></div></div>
+  <div class="sg slider-row"><h4 data-i18n="Word Dwell">Dwell</h4><div class="slider-chip" id="dwell-val">15s</div><input type="range" id="dwell-slider" min="8" max="30" value="15" step="1" list="dwell-ticks"><datalist id="dwell-ticks"><option value="8"><option value="14"><option value="20"><option value="25"><option value="30"></datalist><div class="slider-ticks"><span>8s</span><span>14s</span><span>20s</span><span>25s</span><span>30s</span></div></div>
+  <div class="sg"><h4 data-i18n="Font Family">Font Family</h4><select id="sel-font"></select></div>
+  <div class="sg"><h4 data-i18n="Font Size">Font Size</h4><select id="sel-fontsize"></select></div>
+</div>
+
+<!-- ═══════════ Quiz Overlay ═══════════ -->
+<div class="qo" id="quiz-overlay">
+  <div class="qm">
+    <button class="qc" id="quiz-close">×</button>
+    <div class="qh" id="quiz-header"><div class="qw" id="quiz-word"></div><button class="spkr" id="spkr-btn" title="Replay">🔊</button></div>
+    <div class="qmeta" id="quiz-meta"></div>
+    <div class="qow" id="quiz-options"></div>
+  </div>
+</div>
+
+<!-- ═══════════ Depth Probe (Space Mode) ═══════════ -->
+<div id="depth-probe">
+  <div class="probe-header">
+    <button class="probe-close" onclick="closeProbe()">×</button>
+    <div class="pw" id="probe-word">—</div>
+    <div class="pp" id="probe-phonetic"></div>
+    <div class="pcn" id="probe-cn"></div>
+  </div>
+  <div class="probe-body">
+    <div class="probe-tags" id="probe-tags"></div>
+    <div style="font-size:10px;color:var(--slate);margin-bottom:6px">
+      VAD: <span id="probe-vad"></span>
+    </div>
+    <div style="font-size:10px;color:var(--slate)">记忆共振度</div>
+    <div class="depth-bar"><div class="depth-fill" id="probe-depth-fill" style="width:0%"></div></div>
+    <div class="depth-labels"><span>识别</span><span>回忆</span><span>生成</span><span>创造</span></div>
+    <div class="probe-neighbors">
+      <div class="nl">情感邻居</div>
+      <div class="neighbor-list" id="probe-neighbor-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ Toast & Cheer ═══════════ -->
+<div class="toast" id="toast"></div>
+<div class="sb" id="cheer-bubble"></div>
+
+<!-- ═══════════ Float Mode Color Guide ═══════════ -->
+<div class="float-guide" id="float-guide"></div>
+<div class="achv" id="achievement"></div>
+
+<!-- ═══════════ Progress Bar ═══════════ -->
+<div class="pg-bar" id="pg-bar" style="display:none">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+    <span style="font-size:13px;color:var(--wine);font-weight:600" id="pg-bank">—</span>
+    <span style="font-size:10px;color:#8B6F8C" id="pg-total">—</span>
+  </div>
+  <button id="pg-due" style="display:none;width:100%;font-size:12px;font-weight:700;color:#9B4F65;background:linear-gradient(135deg,rgba(232,213,163,0.18),rgba(232,213,163,0.08));border:1.5px solid rgba(232,213,163,0.45);border-radius:10px;padding:10px 14px;cursor:pointer;text-align:center;margin-bottom:8px">—</button>
+  <div style="height:10px;border-radius:5px;overflow:hidden;display:flex;gap:1px;margin-bottom:6px" id="pg-fsrs"></div>
+  <button id="pg-reset" data-i18n="Reset this bank" style="margin-top:4px;width:100%;padding:3px 6px;border-radius:6px;border:1px solid rgba(196,122,139,0.2);background:transparent;color:#A0707F;cursor:pointer;font-size:9px;font-family:inherit;opacity:0.7">↻ <span data-i18n="Reset">Reset</span></button>
+  <div style="display:flex;gap:8px;font-size:8.5px;color:var(--slate);margin-top:4px;white-space:nowrap" id="pg-legend"></div>
+</div>
+
+<!-- ═══════════ Main Application Script ═══════════ -->
+<script>
+// ──────────────────────────────────────────────
+//  LUMINARIA v2 · Dual-Core Architecture
+//  Static Anchor (Word Bank) + AI Halo (Emotion)
+// ──────────────────────────────────────────────
+
+// ===== Service Worker =====
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('static/sw.js').catch(function(){});
+  });
+}
+
+// ===== Constants =====
+const ANIM_NAMES = ["Pendulum","Bubble Rise","Ocean Wave","Dandelion","Firefly","Echo Pulse","Galaxy Orbit","Kite Soar","Drift & Fade","Firework"];
+const ANIM_NAMES_ZH = ["钟摆悠荡","气泡上升","海浪摇曳","蒲公英飞舞","萤火虫闪烁","回声脉冲","星系轨道","风筝翱翔","浮游淡出","烟花绽放"];
+const BG_GRADIENTS=[
+  {n:"Dawn Mist",c:"linear-gradient(135deg,#FFF6F0 0%,#FFE8D4 25%,#FFD4B0 50%,#FFE4D0 75%,#FFF8F2 100%)"},
+  {n:"Peach Bloom",c:"linear-gradient(135deg,#FFF4EC 0%,#FFE4D4 25%,#FFCAB0 50%,#FFE0D0 75%,#FFF8F4 100%)"},
+  {n:"Rose Quartz",c:"linear-gradient(135deg,#FEF6F4 0%,#F6E4E0 25%,#EDD0CC 50%,#F4E2DE 75%,#FCF8F6 100%)"},
+  {n:"Golden Hour",c:"linear-gradient(135deg,#FFFAF0 0%,#FFF0D4 25%,#FDDDA0 50%,#FFEED4 75%,#FFFCF6 100%)"},
+  {n:"Amber Glow",c:"linear-gradient(135deg,#FFF8EE 0%,#FAE8CC 25%,#F0D4A8 50%,#F8E4C8 75%,#FCF4E0 100%)"},
+  {n:"Lavender Haze",c:"linear-gradient(135deg,#FAF6FC 0%,#F0E6F4 25%,#E4D4EC 50%,#F0E8F6 75%,#FCFAFE 100%)"},
+  {n:"Sea Glass",c:"linear-gradient(135deg,#F2FCF8 0%,#E2F2EC 25%,#D0E6DC 50%,#E4F4EE 75%,#F8FCFA 100%)"},
+  {n:"Sage Whisper",c:"linear-gradient(135deg,#F4FCF6 0%,#E4F0E8 25%,#D0E4D4 50%,#E4F0EA 75%,#F6FCF8 100%)"},
+  {n:"Crystal Air",c:"linear-gradient(135deg,#F6FCFE 0%,#E6F0F6 25%,#D2E4EE 50%,#E8F2F8 75%,#FCFEFE 100%)"},
+  {n:"Wild Honey",c:"linear-gradient(135deg,#FFFBF0 0%,#FCE8CC 25%,#F0D4A0 50%,#F8E6C8 75%,#FCF6E4 100%)"},
+  {n:"Coral Whisper",c:"linear-gradient(135deg,#FFF6F2 0%,#FAE2D6 25%,#F0CAB6 50%,#F6E0D4 75%,#FCF8F4 100%)"},
+  {n:"Champagne",c:"linear-gradient(135deg,#FFFEF2 0%,#F8F0D8 25%,#ECDAA8 50%,#F4ECD4 75%,#FCFAF0 100%)"},
+  {n:"Twilight Haze",c:"linear-gradient(135deg,#FCF6FA 0%,#F0E2EC 25%,#E0D0E0 50%,#EEE2EE 75%,#F8F4F8 100%)"},
+  {n:"Stone Path",c:"linear-gradient(135deg,#FCFAF6 0%,#F0EAE2 25%,#E0D6CE 50%,#EEE8E0 75%,#F8F4F0 100%)"},
+  {n:"Cloud Linen",c:"linear-gradient(135deg,#FEFEFC 0%,#F4F0E8 25%,#E8E0D4 50%,#F2ECE4 75%,#FAF8F4 100%)"},
+  {n:"Blush Drift",c:"linear-gradient(135deg,#FFF5F2 0%,#FAE0D6 25%,#F0C8B6 50%,#F6DED4 75%,#FCF6F4 100%)"},
+  {n:"Frost Bloom",c:"linear-gradient(135deg,#FEFDFA 0%,#F6F0E6 25%,#E8DED2 50%,#F2ECE2 75%,#FCFAF6 100%)"},
+  {n:"Moonlit Hour",c:"linear-gradient(135deg,#F6FAFC 0%,#E6EEF4 25%,#D2DEE8 50%,#E6EAF2 75%,#F4F6FA 100%)"},
+  {n:"Twilight Slate",c:"linear-gradient(135deg,#F6F6FA 0%,#E8E6EC 25%,#D4D2D8 50%,#E6E4E8 75%,#F4F2F6 100%)"},
+  {n:"Ink Wash",c:"linear-gradient(135deg,#F2F4F8 0%,#E2E4EC 25%,#D0D4E0 50%,#E2E6EE 75%,#F4F4F8 100%)"},
+  {n:"Spruce Hush",c:"linear-gradient(135deg,#F4FCF8 0%,#E4F2EC 25%,#D0E4D8 50%,#E2EEE6 75%,#F2F8F4 100%)"},
+  {n:"Pearl Light",c:"linear-gradient(135deg,#FEFEFC 0%,#F8F4EC 25%,#EEE4D4 50%,#F6F0E4 75%,#FCFAF4 100%)"},
+  {n:"Misty Sage",c:"linear-gradient(135deg,#F6FCF6 0%,#E6F2E6 25%,#D2E4D2 50%,#E4F0E6 75%,#F4FAF4 100%)"},
+  {n:"Velvet Night",c:"linear-gradient(135deg,#EEF0F6 0%,#DEE0EA 25%,#CED0DC 50%,#E0E2EC 75%,#F0F2F8 100%)"}
+];
+
+const FONTS = [{n:"Georgia",v:"Georgia,'Times New Roman',serif"},{n:"Serif",v:"'Times New Roman',serif"},{n:"Sans-Serif",v:"-apple-system,sans-serif"},{n:"Monospace",v:"'Courier New',monospace"}];
+const FONT_SIZES = [{n:"Small",v:"18px"},{n:"Medium",v:"24px"},{n:"Large",v:"32px"},{n:"X-Large",v:"40px"}];
+const CHEERS = ["Brilliant!","Excellent!","Perfect!","Wonderful!","Amazing!","Great job!","Keep going!"];
+const ACHV_ICONS = {10:"🌱",25:"🌿",50:"🌸",100:"🌺",200:"🌹",500:"⭐",1000:"🏆",2000:"👑",5000:"💎"};
+const ACHV_TITLES = {en:{10:"Getting Started",25:"Building Up",50:"Half Century",100:"Century Club",200:"Word Warrior",500:"Vocabulary Vault",1000:"Lexicon Legend",2000:"Etymology Emperor",5000:"Grandmaster"},
+                     zh:{10:"初窥门径",25:"小有所成",50:"半百词汇",100:"百词里程碑",200:"词海扬帆",500:"词汇宝库",1000:"词源传奇",2000:"词源帝王",5000:"词汇宗师"}};
+const MILESTONES = [10,25,50,100,200,500,1000,2000,5000];
+
+// Emotion family metadata
+const EMOTION_FAMILIES = {
+  transience: {label:"转瞬即逝",color:"#B894A8",bg:"rgba(184,169,201,0.1)",border:"rgba(184,169,201,0.4)"},
+  strength:   {label:"坚韧",color:"#B8954A",bg:"rgba(201,169,110,0.1)",border:"rgba(201,169,110,0.4)"},
+  joy:        {label:"欢愉",color:"#DC8A6E",bg:"rgba(212,167,106,0.1)",border:"rgba(212,167,106,0.4)"},
+  serenity:   {label:"宁静",color:"#7DAE96",bg:"rgba(160,196,176,0.1)",border:"rgba(160,196,176,0.4)"},
+  melancholy:{label:"忧郁",color:"#6B85A0",bg:"rgba(139,154,174,0.1)",border:"rgba(139,154,174,0.4)"},
+  intellect:  {label:"智慧",color:"#6E5494",bg:"rgba(139,126,158,0.1)",border:"rgba(139,126,158,0.4)"},
+  aggression: {label:"炽烈",color:"#A8483A",bg:"rgba(196,112,96,0.1)",border:"rgba(196,112,96,0.4)"},
+  anxiety:    {label:"不安",color:"#988AA8",bg:"rgba(160,139,158,0.1)",border:"rgba(160,139,158,0.4)"},
+  healing:    {label:"治愈",color:"#6FA382",bg:"rgba(143,184,160,0.1)",border:"rgba(143,184,160,0.4)"}
+};
+
+// ===== Global State =====
+let WB = {};          // Static Anchor: word bank data
+let HALO = {};        // AI Halo: emotional data
+let currentView = 'float';
+let activeWords = [];
+let wordCycle = [];
+let cycleIdx = 0;
+let spawnTimer = null;
+let quizSession = null;
+let quizVersion = 0;
+
+// Config
+let cfg = {
+  wb: '', am:0, sp:3, dn:12, dw:15, bg:0, ff:0, fs:1, lang:0
+};
+
+// Learning log
+let log = {
+  dailyStats:{}, mastered:[], wrongWords:[], reviewSchedule:{},
+  lastDate:null, totalLearned:0, totalCorrect:0, totalWrong:0,
+  streak:0, bestStreak:0, milestones:[], wordSeen:{},
+  bankProgress:{}, fsrsCards:{}, wordbook:[]
+};
+try{var s=JSON.parse(localStorage.getItem("fw_settings"));if(s)cfg=Object.assign({},cfg,s);}catch(e){}
+try{var l=JSON.parse(localStorage.getItem("fw_log"));if(l)log=Object.assign({},log,l);}catch(e){}
+try{var wbSaved=JSON.parse(localStorage.getItem("fw_wordbook"));if(wbSaved)log.wordbook=wbSaved;}catch(e){}
+
+// Normalize FSRS card keys (fix legacy data with whitespace/case variants)
+if(log.fsrsCards){
+  var normalized={}, cleaned=0;
+  for(var k in log.fsrsCards){
+    if(!Object.prototype.hasOwnProperty.call(log.fsrsCards,k)) continue;
+    var norm = (k||'').trim().toLowerCase();
+    if(normalized[norm]){
+      // Merge into existing card
+      var exist=normalized[norm], incoming=log.fsrsCards[k];
+      if(incoming.reps>exist.reps||incoming.s>exist.s){normalized[norm]=incoming;}
+      cleaned++;
+    }else{
+      // Keep this card
+      var card=log.fsrsCards[k];
+      normalized[norm]=card;
+    }
+  }
+  log.fsrsCards=normalized;
+  if(cleaned>0){console.log('[Luminaria] Cleaned '+cleaned+' duplicate FSRS card keys');}
+}
+
+// ===== Utility Functions =====
+function getToday(){return new Date().toISOString().split('T')[0];}
+function addDays(d,n){var nd=new Date(d);nd.setDate(nd.getDate()+n);return nd.toISOString().split('T')[0];}
+function saveLog(){
+  // Defer expensive localStorage writes to avoid blocking UI
+  if(saveLog._timer) clearTimeout(saveLog._timer);
+  saveLog._timer=setTimeout(function(){
+    try{localStorage.setItem("fw_log",JSON.stringify(log));}catch(e){}
+    try{localStorage.setItem("fw_wordbook",JSON.stringify(log.wordbook||[]));}catch(e){}
+  },200);
+}
+function saveCfg(){try{localStorage.setItem("fw_settings",JSON.stringify(cfg));}catch(e){}
+  document.documentElement.style.setProperty("--wdur",cfg.dw+"s");
+  document.body.style.background=BG_GRADIENTS[cfg.bg].c;
+  document.body.style.backgroundSize="400% 400%";
+  document.documentElement.style.setProperty("--ff",FONTS[cfg.ff].v);
+  document.documentElement.style.setProperty("--fs",FONT_SIZES[cfg.fs].v);
+}
+function ensureToday(){var t=getToday();if(!log.dailyStats[t])log.dailyStats[t]={learned:0,correct:0,wrong:0,words:{}};}
+function updateStreak(){var today=getToday();if(log.lastDate===today)return;var prev=new Date();prev.setDate(prev.getDate()-1);var yest=prev.toISOString().split('T')[0];log.streak=(log.lastDate===yest)?log.streak+1:1;log.lastDate=today;if(log.streak>log.bestStreak)log.bestStreak=log.streak;saveLog();}
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},1800);}
+function showCheer(msg){
+  var sb=document.getElementById('cheer-bubble');
+  sb.textContent=msg||CHEERS[Math.floor(Math.random()*CHEERS.length)];
+  sb.classList.add('show');clearTimeout(sb._t);
+  sb._t=setTimeout(function(){sb.classList.remove('show');},2000);
+}
+// ===== Speech Synthesis =====
+var speechReady = false;
+var preferredVoice = null;
+
+function initSpeech(){
+  if(!window.speechSynthesis) return;
+  // Pick best available English voice
+  var pickVoice = function(){
+    var voices = window.speechSynthesis.getVoices();
+    if(!voices || !voices.length) return;
+    // Prefer: en-US female → en-GB → any English → first voice
+    preferredVoice = voices.find(function(v){return v.lang==='en-US'&&/female|samantha|victoria|karen|moira|tessa/i.test(v.name);})
+                  || voices.find(function(v){return v.lang==='en-US';})
+                  || voices.find(function(v){return /^en/i.test(v.lang);})
+                  || voices[0];
+    speechReady = true;
+  };
+  pickVoice();
+  // Some browsers populate voices async
+  if(!speechReady && window.speechSynthesis.onvoiceschanged !== undefined){
+    window.speechSynthesis.onvoiceschanged = pickVoice;
+  }
+}
+
+function speakWord(word){
+  if(!window.speechSynthesis) return;
+  try{
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(word);
+    u.lang = 'en-US';
+    u.rate = 0.95;
+    u.pitch = 1;
+    u.volume = 1;
+    if(preferredVoice) u.voice = preferredVoice;
+    // Edge/Safari sometimes need a small delay to pick up voice
+    if(!speechReady){
+      // Try to load voices synchronously
+      var v = window.speechSynthesis.getVoices();
+      if(v && v.length){
+        preferredVoice = v.find(function(x){return x.lang==='en-US';}) || v[0];
+        u.voice = preferredVoice;
+        speechReady = true;
+      }
+    }
+    window.speechSynthesis.speak(u);
+  }catch(e){
+    console.warn('Speech error:', e);
+  }
+}
+
+// ===== FSRS Algorithm (preserved from v1, enhanced for v2) =====
+function fsrsUpdate(word, correct){
+  var c = log.fsrsCards[word] || {s:1, d:5, state:0, reps:0, lapses:0, due:getToday()};
+  var today = getToday();
+  if(correct){
+    c.reps++;
+    if(c.state===0){c.s=1;c.d=5;c.state=2;c.due=addDays(today,1);}
+    else{
+      var R = Math.exp(Math.log(0.9)*(c.state===3?1:Math.max(0.5,(new Date(today)-new Date(c.due))/864e5))/Math.max(0.5,c.s));
+      c.s = Math.max(0.5,c.s*(1+0.12*(1-R)));
+      c.d = Math.max(1,Math.min(10,c.d-0.15));
+      c.state = 2;
+      c.due = addDays(today,Math.max(1,Math.round(c.s*(0.9+0.2*Math.random()))));
+    }
+  } else {
+    c.lapses++;
+    c.d = Math.min(10,c.d+2);
+    c.s = Math.max(0.5,c.s*0.4);
+    c.state = 3;
+    c.due = today;
+  }
+  // Depth score: based on stability, reps, and lapse ratio
+  c.depthScore = Math.min(100, Math.round(c.s * 8 + c.reps * 2 - c.lapses * 3));
+  log.fsrsCards[word] = c;
+}
+
+function getFSRSDepth(word){
+  var c = log.fsrsCards[word];
+  if(!c || c.state===0) return 8;  // unexplored
+  return c.depthScore || Math.min(95, Math.round((c.s||1)*8 + (c.reps||0)*2 - (c.lapses||0)*3));
+}
+
+// ══════ Cached due-words counter (avoids O(n×m) scan every progress update) ══════
+var _dueCache=null,_dueCacheDirty=true;
+function getDueFSRSWordCount(){
+  if(!_dueCacheDirty&&_dueCache) return _dueCache.length;
+  _dueCache=getDueFSRSWords();
+  _dueCacheDirty=false;
+  return _dueCache.length;
+}
+function markDueCacheDirty(){_dueCacheDirty=true;}
+
+function getDueFSRSWords(){
+  var today=getToday(), cards=log.fsrsCards, seenWord={};
+  var result=[];
+  for(var k in cards){
+    if(!Object.prototype.hasOwnProperty.call(cards,k)) continue;
+    if(cards[k].due<=today && cards[k].state>=1){
+      var norm = (k||'').trim().toLowerCase();
+      if(seenWord[norm]) continue;
+      for(var bk in WB){
+        var items=WB[bk];
+        for(var i=0;i<items.length;i++){
+          if(items[i][0]===k){
+            result.push(items[i]);
+            seenWord[norm]=1;
+            break;
+          }
+        }
+        if(seenWord[norm]) break;  // stop searching other banks after first match
+      }
+    }
+  }
+  console.log('[getDueFSRSWords] total cards:', Object.keys(cards).length, 'due unique words:', result.length);
+  return result;
+}
+
+// ===== Word Bank Loading =====
+// ===== Inline Data (replaced by build.js) =====
+var WB_FULL = __WB_DATA_PLACEHOLDER__;
+var HALO_FULL = __HALO_DATA_PLACEHOLDER__;
+
+// ===== Word Bank Loading =====
+function loadWordBank(){
+  if(typeof WB_FULL !== 'undefined' && WB_FULL && Object.keys(WB_FULL).length > 0){
+    WB = WB_FULL;
+    if(!cfg.wb || !WB[cfg.wb]) cfg.wb = Object.keys(WB)[0];
+    console.log('[Luminaria] Loaded '+Object.keys(WB).length+' word banks ('+Object.values(WB).reduce(function(a,b){return a+b.length;},0)+' words) from inline data');
+    return Promise.resolve(WB);
+  }
+  return fetch('data/wb_data.json')
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if(!data||Object.keys(data).length===0) throw new Error("empty");
+      WB = data;
+      if(!cfg.wb || !WB[cfg.wb]) cfg.wb = Object.keys(WB)[0];
+      return WB;
+    })
+    .catch(function(e){
+      console.warn('[Luminaria] Using fallback:',e.message);
+      WB = {"CET-4-Demo":[["abandon","v.放弃;抛弃;遗弃"],["ability","n.能力;才能"]]};
+      if(!cfg.wb) cfg.wb = Object.keys(WB)[0];
+      return WB;
+    });
+}
+
+// ===== AI Halo Loading =====
+function loadHaloData(){
+  // Primary: use inlined halo data
+  if(typeof HALO_FULL !== 'undefined' && Object.keys(HALO_FULL).length > 0){
+    HALO = HALO_FULL;
+    console.log('[Luminaria] Loaded '+Object.keys(HALO).length+' halo entries (inline)');
+    return Promise.resolve(HALO);
+  }
+  return fetch('halo_data.json')
+    .then(function(r){return r.json();})
+    .then(function(data){
+      HALO = data.words || {};
+      console.log('[Luminaria] Loaded '+Object.keys(HALO).length+' halo entries');
+      return HALO;
+    })
+    .catch(function(e){
+      console.warn('[Luminaria] Halo data fallback:',e.message||e);
+      HALO = {"ephemeral":{"v":3.8,"a":2.1,"d":2.9,"traits":["translucent","morning-mist","fading"],"family":"transience","color":"#B8A9C9","animation":3},"resolute":{"v":6.5,"a":4.2,"d":7.8,"traits":["firm","mountain","unmoving"],"family":"strength","color":"#C9A96E","animation":0},"ebullient":{"v":7.8,"a":7.2,"d":5.5,"traits":["bubbling","energetic","vibrant"],"family":"joy","color":"#D4A76A","animation":1},"melancholy":{"v":2.5,"a":2.0,"d":2.0,"traits":["grey-blue","raindrop","pensive"],"family":"melancholy","color":"#8B9AAE","animation":2},"erudite":{"v":6.0,"a":3.5,"d":6.8,"traits":["scholarly","weighty","wise"],"family":"intellect","color":"#8B7E9E","animation":7}};
+      return HALO;
+    });
+}
+
+function getHalo(word){
+  return HALO[word] || null;
+}
+
+function getEmotionClass(word){
+  var h = getHalo(word);
+  return h ? 'emotion-'+h.family : '';
+}
+
+// ===== Word Cycle =====
+function buildCycle(){
+  var bk = WB[cfg.wb] || [];
+  if(!bk.length) return [];
+  // Build master lookup once (O(1) per check instead of O(n) indexOf)
+  var mastered={};
+  for(var mi=0;mi<log.mastered.length;mi++) mastered[log.mastered[mi]]=1;
+  var merged=[], seenWord={};
+  // Due reviews first
+  var due=getDueFSRSWords();
+  for(var i=0;i<due.length;i++){
+    var dw=due[i][0];
+    if(!seenWord[dw]){merged.push(due[i]);seenWord[dw]=1;}
+  }
+  // Wrong words (not yet mastered)
+  for(var i=0;i<log.wrongWords.length;i++){
+    var ww=log.wrongWords[i][0];
+    if(!seenWord[ww]&&!mastered[ww]){merged.push(log.wrongWords[i]);seenWord[ww]=1;}
+  }
+  // Rest of bank (shuffled)
+  var rest=[];
+  for(var i=0;i<bk.length;i++){
+    var kw=bk[i][0];
+    if(!seenWord[kw]&&!mastered[kw]) rest.push(bk[i]);
+  }
+  // Fisher-Yates shuffle
+  for(var i=rest.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=rest[i];rest[i]=rest[j];rest[j]=t;}
+  merged = merged.concat(rest);
+
+  return merged.length ? merged : bk.slice();
+}
+
+function getNextWord(){
+  if(wordCycle.length===0){wordCycle=buildCycle();cycleIdx=0;}
+  if(wordCycle.length===0) return null;
+  var e = wordCycle[cycleIdx % wordCycle.length];
+  cycleIdx++;
+  if(cycleIdx>=wordCycle.length){cycleIdx=0;wordCycle=buildCycle();}
+  return e;
+}
+
+function getRandomPos(){
+  var mx=window.innerWidth*0.20, my=window.innerHeight*0.15;
+  var minX=mx, maxX=window.innerWidth-mx, minY=my, maxY=window.innerHeight-my;
+  for(var t=0;t<40;t++){
+    var x=minX+Math.random()*(maxX-minX), y=minY+Math.random()*(maxY-minY);
+    var blocked=false;
+    for(var i=activeWords.length-1;i>=0&&i>=activeWords.length-15;i--){
+      var el=activeWords[i];if(!el||!el.parentNode)continue;
+      var r=el.getBoundingClientRect();
+      if(Math.abs(x-r.left)<100&&Math.abs(y-r.top)<60){blocked=true;break;}
+    }
+    if(!blocked)return{x:x,y:y};
+  }
+  return{x:minX+Math.random()*(maxX-minX),y:minY+Math.random()*(maxY-minY)};
+}
+
+// ===== Float Mode: Spawn & Manage Words =====
+function spawnWord(){
+  if(currentView!=='float') return;
+  if(activeWords.length >= cfg.dn) return;
+  var entry = getNextWord();
+  if(!entry) return;
+  var word=entry[0], meaning=entry[1];
+
+  var el = document.createElement('div');
+  // Use user's selected animation mode directly — halo's animation field is ignored
+  // so toggling modes in settings immediately reflects on all on-screen words.
+  el.className = 'wb a'+cfg.am;
+
+  // Single visual signal: emotion color. Three-tier opacity from FSRS state.
+  var h = getHalo(word);
+  if(h && h.color){
+    el.style.color = h.color;
+  } else {
+    el.style.color = '#9B8090';
+  }
+  el.style.borderBottom = 'none';
+
+  // Three-tier opacity (consistent with Space mode)
+  var fc = log.fsrsCards[word] || {};
+  if(!fc || fc.state === 0){
+    el.style.opacity = '0.22';   // unexplored: faintly visible
+  } else if(fc.s >= 15){
+    el.style.opacity = '0.95';   // mastered: bold
+  } else {
+    el.style.opacity = '0.55';   // learning: visible
+  }
+
+  var ec = getEmotionClass(word);
+  if(ec) el.classList.add(ec);
+
+  el.textContent = word;
+  el.dataset.w = word;
+  el.dataset.m = meaning;
+  el.title = meaning;
+
+  var pos = getRandomPos();
+  el.style.left = pos.x+'px';
+  el.style.top = pos.y+'px';
+  var dur = cfg.dw + (Math.random()-0.5)*4;
+  el.style.animationDuration = dur+'s';
+
+  document.getElementById('float-container').appendChild(el);
+  activeWords.push(el);
+
+  el.addEventListener('click', function(e){e.stopPropagation();startQuiz(el);});
+
+  setTimeout(function(){
+    if(el.parentNode){el.remove();activeWords=activeWords.filter(function(w){return w!==el;});}
+  },(dur-0.5)*1000);
+}
+
+function startSpawner(){
+  if(spawnTimer) clearInterval(spawnTimer);
+  var iv = Math.max(300, 2800 - cfg.sp * 250);
+  spawnTimer = setInterval(function(){
+    while(activeWords.length < cfg.dn) spawnWord();
+  }, iv);
+}
+
+// ===== Quiz Logic =====
+function startQuizDirect(word,meaning){
+  var wel=document.createElement("div");
+  wel.dataset.w=word;wel.dataset.m=meaning;
+  startQuiz(wel);
+}
+
+function startQuiz(wel){
+  updateStreak();
+  quizVersion++;
+  document.getElementById('float-container').style.pointerEvents= currentView==='float' ? 'none' : '';
+
+  var word=wel.dataset.w, correct=wel.dataset.m;
+  var overlay=document.getElementById('quiz-overlay');
+  overlay._activeWord = wel;
+
+  setTimeout(function(){speakWord(word);}, 50);
+
+  var headerEl=document.getElementById('quiz-header');
+  headerEl.innerHTML='<div class="qw">'+word+'</div><button class="spkr" id="spkr-btn" title="Replay">🔊</button>';
+  document.getElementById('spkr-btn').addEventListener('click',function(e){e.stopPropagation();speakWord(word);});
+
+  // Meta: already mastered badge
+  var zh=cfg.lang===1;
+  document.getElementById('quiz-meta').innerHTML=log.mastered.indexOf(word)>=0?
+    ('<span class="mbadge">'+(zh?'✅ 已掌握':'✅ Already Mastered')+'</span>'):'';
+
+  var oc=document.getElementById('quiz-options');
+  oc.innerHTML='';
+
+  // Generate 3 distractors (guaranteed unique via shuffle-and-take)
+  // Defensive: populate _mqCache if empty (lazy initialization)
+  if(!_mqCache || !_mqCache.length){
+    _mqCache=[];
+    for(var _bk in WB){var _it=WB[_bk];for(var _j=0;_j<_it.length;_j++){_mqCache.push(_it[_j][1]);}}
+  }
+  var allM=_mqCache.slice();
+  allM=allM.filter(function(m){return m!==correct;});
+  // Shuffle the entire list, then take first 3 — guarantees 3 unique distractors
+  for(var si=allM.length-1;si>0;si--){var sj=Math.floor(Math.random()*(si+1));var st=allM[si];allM[si]=allM[sj];allM[sj]=st;}
+  var ds=allM.slice(0,3);
+  // If for some reason we couldn't get 3 distractors, pad with duplicates of correct
+  while(ds.length<3){
+    ds.push(correct);
+  }
+  var opts=[correct].concat(ds);
+  for(var i=opts.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=opts[i];opts[i]=opts[j];opts[j]=t;}
+
+  // Version tracking to prevent stale callbacks
+  var qzV=quizVersion;
+
+  // Store correct answer + word + version on container for event delegation
+  oc.dataset.correct=correct;oc.dataset.word=word;oc.dataset.qzV=qzV;
+
+  // innerHTML bulk create instead of 4× createElement
+  var qhtml='';
+  for(var qi=0;qi<opts.length;qi++){
+    qhtml+='<button class="qob" data-opt="'+opts[qi].replace(/"/g,'&quot;')+'">'+opts[qi]+'</button>';
+  }
+  oc.innerHTML=qhtml;
+
+  overlay.classList.add('active');
+}
+
+// Unified quiz answer handler (event delegation — one listener for all options)
+function handleQuizAnswer(e){
+  var oc=document.getElementById('quiz-options');
+  var btn=e.target.closest('.qob');
+  if(!btn||!oc) return;
+  if(btn.classList.contains('post-action')||btn.classList.contains('qnext')) return;
+  if(btn.classList.contains('ok')||btn.classList.contains('ng')) return;
+  if(String(quizVersion)!==oc.dataset.qzV) return;
+
+  var word=oc.dataset.word, correct=oc.dataset.correct;
+  var opt=btn.dataset.opt||btn.textContent;
+  if(opt===correct){
+    btn.classList.add('ok');
+    ensureToday();var today=getToday();var dt=log.dailyStats[today];
+    if(!dt.words[word]){dt.learned++;}
+    if(dt.words[word]!=='correct'){if(dt.words[word]==='wrong')dt.wrong--;dt.correct++;dt.words[word]='correct';}
+    log.totalCorrect++;log.totalLearned++;
+    if(!log.wordSeen[cfg.wb])log.wordSeen[cfg.wb]=[];
+    if(log.wordSeen[cfg.wb].indexOf(word)===-1)log.wordSeen[cfg.wb].push(word);
+    fsrsUpdate(word,true);
+    markDueCacheDirty();
+    log.wrongWords=log.wrongWords.filter(function(w){return w[0]!==word;});
+    saveLog();updateProgressDeferred();refreshStats();
+    if(typeof lightUpStar==='function') lightUpStar(word,'correct');
+    var cheers=cfg.lang===1?['✨ 太棒了！','🌟 优秀！','💯 完美！','🌸 真厉害！','😍 漂亮！','👏 好极了！']:['✨ Brilliant!','🌟 Excellent!','💯 Perfect!','🌸 Wonderful!','😍 Amazing!','👏 Great job!'];
+    showCheer(cheers[Math.floor(Math.random()*cheers.length)]);
+    checkMilestones();
+    showPostAnswerActions(word, correct, parseInt(oc.dataset.qzV), 'correct');
+  } else {
+    btn.classList.add('ng');
+    var btns=oc.querySelectorAll('.qob');
+    for(var bi=0;bi<btns.length;bi++){if((btns[bi].dataset.opt||btns[bi].textContent)===correct){btns[bi].classList.add('ok');}}
+    ensureToday();var today=getToday();var dt=log.dailyStats[today];
+    if(dt.words[word]!=='wrong'){dt.wrong++;dt.words[word]='wrong';if(dt.words[word]!=='correct')dt.learned++;}
+    log.totalWrong++;log.totalLearned++;
+    fsrsUpdate(word,false);
+    markDueCacheDirty();
+    if(typeof lightUpStar==='function') lightUpStar(word,'wrong');
+    if(!log.wrongWords.find(function(w){return w[0]===word;})){log.wrongWords.push([word,correct]);}
+    if(typeof addToWB==='function' && !log.wordbook.find(function(w){return w[0]===word;})){addToWB(word, correct, 'wrong');}
+    saveLog();updateProgressDeferred();refreshStats();
+    showPostAnswerActions(word, correct, parseInt(oc.dataset.qzV), 'wrong');
+  }
+}
+
+function showPostAnswerActions(word, meaning, qzV, kind){
+  var zh=cfg.lang===1;
+  var oc=document.getElementById('quiz-options');
+  // Remove any existing post-action buttons
+  oc.querySelectorAll('.post-action').forEach(function(b){b.remove();});
+  oc.querySelectorAll('.qnext').forEach(function(b){b.remove();});
+
+  // Save status badge (always shown — for correct shows Save, for wrong shows auto-saved)
+  if(kind==='correct'){
+    var inWB = log.wordbook && log.wordbook.find(function(w){return w[0]===word;});
+    var saveBtn=document.createElement('button');
+    saveBtn.className='qob post-action';
+    if(inWB){
+      var wasWrong = log.wordbook.find(function(w){return w[0]===word && w[2]==='wrong';});
+      saveBtn.textContent=wasWrong ? (zh?'📌 已收藏（来自错词）':'📌 Saved (from wrong)') : (zh?'✓ 已在单词本':'✓ Already Saved');
+      saveBtn.disabled=true;
+      saveBtn.style.cssText='margin-top:8px;background:rgba(163,201,192,0.18);border:1.5px solid rgba(163,201,192,0.4);color:#3D6B50;cursor:default;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:600;width:100%';
+    } else {
+      saveBtn.textContent=zh?'⭐ 收藏到单词本':'⭐ Save to Wordbook';
+      saveBtn.style.cssText='margin-top:8px;background:linear-gradient(135deg,rgba(232,213,163,0.3),rgba(196,122,139,0.18));border:1.5px solid rgba(200,170,100,0.5);color:#8B6914;cursor:pointer;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:600;width:100%';
+      saveBtn.onclick=function(e){
+        e.stopPropagation();
+        if(qzV!==quizVersion)return;
+        if(typeof addToWB==='function') addToWB(word, meaning, 'saved');
+        saveBtn.textContent=zh?'✓ 已收藏':'✓ Saved';
+        saveBtn.disabled=true;
+        saveBtn.style.opacity='0.6';
+        saveBtn.style.cursor='default';
+      };
+    }
+    oc.appendChild(saveBtn);
+  } else if(kind==='wrong'){
+    // Wrong: word auto-saved to wordbook, just inform the user
+    var wrongBtn=document.createElement('button');
+    wrongBtn.className='qob post-action';
+    wrongBtn.disabled=true;
+    wrongBtn.textContent=zh?'📖 已自动加入单词本（待复习）':'📖 Auto-added to Wordbook';
+    wrongBtn.style.cssText='margin-top:8px;background:rgba(232,213,163,0.15);border:1.5px solid rgba(232,213,163,0.4);color:#8B6914;cursor:default;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:600;width:100%';
+    oc.appendChild(wrongBtn);
+  }
+
+  // Next / Done button
+  var isLast = quizSession && quizSession.index >= quizSession.words.length;
+  var nb=document.createElement('button');
+  nb.className='qob post-action qnext';
+  if(quizSession){
+    nb.textContent=isLast?(zh?'✓ 完成复习':'✓ Done'):(zh?'下一题 →':'Next →');
+  } else {
+    nb.textContent=zh?'继续 →':'Continue →';
+  }
+  nb.style.cssText='margin-top:8px;background:rgba(255,255,255,0.4);border:1.5px solid rgba(196,122,139,0.3);color:#7A4B5E;cursor:pointer;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:600;width:100%';
+  nb.onclick=function(e){
+    e.stopPropagation();
+    if(qzV!==quizVersion)return;
+    // Clean up the current hidden quiz element if present
+    var qoEl=document.getElementById('quiz-overlay');
+    var prev=qoEl._activeWord;
+    if(prev&&prev.parentNode&&prev.style.display==='none') prev.remove();
+    qoEl.classList.add('active');
+    if(quizSession){
+      // In review/wrong-quiz mode, advance to next word
+      nextQuizWord();
+    } else {
+      closeQuiz();
+    }
+  };
+  oc.appendChild(nb);
+}
+
+function closeQuiz(){
+  var overlay=document.getElementById('quiz-overlay');
+  overlay.classList.remove('active');
+  var w=overlay._activeWord;
+  if(w&&w.parentNode){w.remove();activeWords=activeWords.filter(function(x){return x!==w;});}
+  if(quizSession){quizSession=null;quizVersion=0;
+    if(currentView==="float"){
+      for(var i=0;i<activeWords.length;i++){if(activeWords[i]&&activeWords[i].parentNode)activeWords[i].remove();}
+      activeWords=[];wordCycle=[];cycleIdx=0;startSpawner();
+    }
+  }
+  if(currentView==='float') document.getElementById('float-container').style.pointerEvents='';
+  // Redraw constellation progress after quiz dismiss (user can see the change)
+  if(typeof drawConstellationOverlay==='function') try{drawConstellationOverlay();}catch(e){}
+}
+
+// ===== Stats =====
+function refreshStats(){
+  ensureToday();var today=getToday(),dt=log.dailyStats[today];
+  var zh=cfg.lang===1;
+  document.getElementById('st-today').textContent=(dt.correct||0)+' / '+(dt.wrong||0);
+  document.getElementById('st-acc').textContent=dt.learned>0?Math.round(dt.correct/dt.learned*100)+'%':'-';
+  document.getElementById('st-streak').textContent=log.streak;
+  var totalU=0;for(var bk in log.wordSeen){if(Array.isArray(log.wordSeen[bk]))totalU+=log.wordSeen[bk].length;}
+  document.getElementById('st-total').textContent=totalU;
+  document.getElementById('st-wrong').textContent=log.wrongWords.filter(function(w){return log.mastered.indexOf(w[0])<0;}).length;
+  // Update labels
+  var labels=document.querySelectorAll('[data-stat]');
+  labels.forEach(function(l){var k=l.getAttribute('data-stat');if(I18N[k])l.textContent=t(k);});
+}
+
+function checkMilestones(){
+  for(var i=0;i<MILESTONES.length;i++){
+    var m=MILESTONES[i];
+    if(log.totalLearned>=m&&log.milestones.indexOf(m)<0){
+      log.milestones.push(m);saveLog();
+      var zh=cfg.lang===1;
+      var title=zh?ACHV_TITLES.zh[m]:ACHV_TITLES.en[m];
+      var wordStr=zh?(m+' 词已学会！'):(m+' Words Learned!');
+      var el=document.getElementById('achievement');
+      el.innerHTML='<span style="font-size:48px">'+ACHV_ICONS[m]+'</span><div style="font-size:16px;color:var(--wine);margin-top:8px">'+wordStr+'</div><div style="font-size:12px;color:#8B6F8C;margin-top:4px">'+title+'</div>';
+      el.classList.add('show');
+      confettiBurst();
+      setTimeout(function(){el.classList.remove('show');},3000);
+      break;
+    }
+  }
+}
+
+function confettiBurst(){
+  var colors=['#C41E3A','#E8A0BF','#E8C547','#98D8C8','#6BA3BE','#D4A5C9'];
+  for(var i=0;i<50;i++){
+    var p=document.createElement('div');
+    p.style.cssText='position:fixed;z-index:160;width:'+(5+Math.random()*7)+'px;height:'+(5+Math.random()*7)+'px;border-radius:'+(Math.random()>0.5?'50%':'2px')+';background:'+colors[Math.floor(Math.random()*colors.length)]+';left:'+(Math.random()*100)+'vw;top:-20px;pointer-events:none';
+    document.body.appendChild(p);
+    var d=(2+Math.random()*3)*1000;
+    p.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate('+((Math.random()-0.5)*400)+'px,'+(window.innerHeight+200)+'px) rotate('+(Math.random()*720-360)+'deg)',opacity:0}],{duration:d,easing:'ease-out'});
+    setTimeout(function(){p.remove();},d+200);
+  }
+}
+
+// ===== Progress Bar =====
+var _upTimer=null;
+function updateProgressDeferred(){
+  if(_upTimer) clearTimeout(_upTimer);
+  _upTimer=setTimeout(updateProgress,80);
+}
+function updateProgress(){
+  var bk = cfg.wb, all = WB[bk] || [];
+  var zh = cfg.lang===1;
+  if(!all.length) return;
+  document.getElementById('pg-bar').style.display='block';
+  document.getElementById('pg-bank').textContent = bk;
+  document.getElementById('pg-total').textContent = all.length+(zh?' 词':' words');
+
+  var cards=log.fsrsCards||{}, m=0,l=0,u=all.length,d=0;
+  for(var i=0;i<all.length;i++){
+    var w=all[i][0], c=cards[w];
+    if(!c||c.state===0){/**/}else if(c.state===3||c.d>=8){d++;}
+    else if(c.s>=15){m++;}else{l++;}
+  }
+  u=all.length-m-l-d;
+  var total=all.length;
+  var fsrsEl=document.getElementById('pg-fsrs');
+  fsrsEl.innerHTML='<div style="height:100%;background:#A3C9C0;width:'+(m/total*100)+'%;border-radius:4px 0 0 4px;display:flex;align-items:center;justify-content:center;font-size:7px;color:#fff;font-weight:700">'+(m/total*100>10?Math.round(m/total*100)+'%':'')+'</div><div style="height:100%;background:#F5C842;width:'+(l/total*100)+'%;display:flex;align-items:center;justify-content:center;font-size:7px;color:#fff;font-weight:700">'+(l/total*100>10?Math.round(l/total*100)+'%':'')+'</div><div style="height:100%;background:#E84855;width:'+(d/total*100)+'%;display:flex;align-items:center;justify-content:center;font-size:7px;color:#fff;font-weight:700">'+(d/total*100>10?Math.round(d/total*100)+'%':'')+'</div><div style="flex:1;height:100%;background:rgba(196,122,139,0.08);border-radius:0 4px 4px 0"></div>';
+
+  var legEl=document.getElementById('pg-legend');
+  legEl.innerHTML='';
+  var tips=zh?
+    ['经长期间隔学习后依然稳固记忆的词，需要数月积累','已开始学习但尚未达到稳固记忆的词','反复答错或记忆较困难的词','尚未开始学习的词']:
+    ['Words with long-term stable memory — takes months of spaced review','Words you started learning but haven\'t stabilized yet','Words you repeatedly struggled with','Words you haven\'t encountered yet'];
+  var items=[
+    ['🟢 '+(zh?'掌握':'Mastered')+' '+m, tips[0]],
+    ['🟡 '+(zh?'学习中':'Learning')+' '+l, tips[1]],
+    ['🔴 '+(zh?'困难':'Hard')+' '+d, tips[2]],
+    ['⚪ '+(zh?'未学':'Unseen')+' '+u, tips[3]]
+  ];
+  for(var _ti=0;_ti<items.length;_ti++){
+    var s=document.createElement('span');
+    s.textContent=items[_ti][0];
+    s.title=items[_ti][1];
+    legEl.appendChild(s);
+  }
+
+  // Review badge
+  var n=getDueFSRSWordCount();
+  var zh=cfg.lang===1;
+  var dueBtn=document.getElementById('pg-due');
+  if(dueBtn){
+    if(n>0){
+      dueBtn.style.color='#9B4F65';
+      dueBtn.innerHTML='<span>⏰</span> '+(zh?'今日待复习 ':'Review ')+n+(zh?' 词 →':' today →');
+      dueBtn.onclick=function(){
+        if(currentView!=='float') switchView('float');
+        for(var i=0;i<activeWords.length;i++){if(activeWords[i]&&activeWords[i].parentNode)activeWords[i].remove();}
+        activeWords=[];quizSession={words:due,index:0};quizVersion=1;
+        showToast(zh?('开始复习 '+n+' 词'):('Reviewing '+n+' words'));
+        nextQuizWord();
+      };
+    }else{
+      dueBtn.style.color='#A3C9C0';
+      dueBtn.innerHTML='<span>✨</span> '+(zh?'今日复习已完成':'Review complete');
+      dueBtn.onclick=function(){};
+    }
+  }
+  // Update Today review card
+  var dueEl=document.getElementById('st-due');
+  if(dueEl) dueEl.textContent=n;
+}
+
+// ===== Settings Panel =====
+function buildSettings(){
+  // Mode indicator: show hint when in Space mode
+  var fl=document.getElementById('section-float-label');
+  if(fl){
+    var zh=cfg.lang===1;
+    if(currentView==='space'){
+      fl.style.opacity='0.5';
+      fl.dataset.modeHint=zh?'（Space 模式下不生效）':' (inactive in Space mode)';
+      fl.textContent=(zh?'Float 模式':'Float Mode')+' '+fl.dataset.modeHint;
+    }else{
+      fl.style.opacity='1';
+      fl.textContent=zh?'Float 模式':'Float Mode';
+    }
+  }
+  // Word bank selector
+  var sel=document.getElementById('sel-bank');
+  sel.innerHTML='';
+  for(var k in WB){var o=document.createElement('option');o.value=k;o.textContent=k+' ('+WB[k].length+')';sel.appendChild(o);}
+  sel.value=cfg.wb;
+
+  // Animation grid
+  var ag=document.getElementById('anim-grid');
+  ag.innerHTML='';
+  for(var i=0;i<ANIM_NAMES.length;i++){(function(idx){
+    var b=document.createElement('button');b.className='ao'+(idx===cfg.am?' ac':'');
+    b.textContent=cfg.lang===1?ANIM_NAMES_ZH[idx]:ANIM_NAMES[idx];
+    b.addEventListener('click',function(){cfg.am=idx;saveCfg();buildSettings();showToast(ANIM_NAMES[idx]);});
+    ag.appendChild(b);
+  })(i);}
+
+  // Background grid: 24 themes in 8×3 layout
+  var bgGrid=document.getElementById('bg-grid');
+  bgGrid.innerHTML='';
+  for(var i=0;i<BG_GRADIENTS.length;i++){(function(idx){
+    var d=document.createElement('div');
+    d.className='bg-swatch'+(idx===cfg.bg?' active':'');
+    d.style.background=BG_GRADIENTS[idx].c;
+    d.title=BG_GRADIENTS[idx].n;
+    d.addEventListener('click',function(){cfg.bg=idx;saveCfg();buildSettings();});
+    bgGrid.appendChild(d);
+  })(i);}
+
+  // Font selector
+  var ff=document.getElementById('sel-font');
+  ff.innerHTML='';
+  for(var i=0;i<FONTS.length;i++){var o=document.createElement('option');o.value=i;o.textContent=FONTS[i].n;ff.appendChild(o);}
+  ff.value=cfg.ff;
+
+  // Font size selector
+  var fs=document.getElementById('sel-fontsize');
+  fs.innerHTML='';
+  for(var i=0;i<FONT_SIZES.length;i++){var o=document.createElement('option');o.value=i;o.textContent=FONT_SIZES[i].n;fs.appendChild(o);}
+  fs.value=cfg.fs;
+
+  // Sliders
+  document.getElementById('speed-slider').value=cfg.sp;document.getElementById('speed-val').textContent=cfg.sp;
+  document.getElementById('density-slider').value=cfg.dn;document.getElementById('density-val').textContent=cfg.dn;
+  document.getElementById('dwell-slider').value=cfg.dw;document.getElementById('dwell-val').textContent=cfg.dw+'s';
+}
+
+// ===== View Switching =====
+function switchView(view){
+  currentView = view;
+  document.querySelectorAll('.view-btn').forEach(function(b){b.classList.toggle('active',b.dataset.view===view);});
+  document.getElementById('float-container').style.display = view==='float' ? 'block' : 'none';
+  document.getElementById('float-container').style.pointerEvents = view==='float' ? 'none' : 'auto';
+  document.getElementById('space-canvas').style.display = view==='space' ? 'block' : 'none';
+  document.getElementById('space-canvas').style.pointerEvents = view==='space' ? 'auto' : 'none';
+
+  if(view==='float'){
+    if(spawnTimer) clearInterval(spawnTimer);
+    if(spaceState._posInterval) {clearInterval(spaceState._posInterval);spaceState._posInterval=null;}
+    stopSpaceBgLoop();
+    activeWords.forEach(function(el){if(el&&el.parentNode)el.remove();});
+    activeWords=[];wordCycle=[];cycleIdx=0;
+    // Cleanup Space mode overlays
+    ['const-labels','space-welcome','space-legend-panel','space-axis','space-axis-v','space-tooltip','space-dom-layer'].forEach(function(id){
+      var e=document.getElementById(id);if(e)e.remove();
+    });
+    // Show Float guide, hide Space legend
+    var fg=document.getElementById('float-guide');if(fg){fg.style.display='block';buildFloatGuide();}
+    startSpawner();
+    while(activeWords.length<Math.min(6,cfg.dn)) spawnWord();
+    document.getElementById('float-container').style.pointerEvents='';
+  } else {
+    if(spawnTimer) clearInterval(spawnTimer);
+    document.getElementById('float-container').innerHTML='';
+    activeWords=[];
+    // Hide Float guide
+    var fg2=document.getElementById('float-guide');if(fg2)fg2.style.display='none';
+    // Phase 1: canvas + bg particles visible immediately (line 1373)
+    // Phase 2: overlays + welcome + legend render in this rAF
+    // Phase 3: dots appear in next rAF (via _deferNext)
+    renderSpaceView._deferNext=true;
+    requestAnimationFrame(renderSpaceView);
+  }
+}
+
+// ===== Space Mode: Spatial Memory Engine =====
+let spaceState = {offsetX:0, offsetY:0, scale:1, dragging:false, dragX:0, dragY:0, hoveredWord:null, selectedWord:null, frame:0};
+let spaceParticles = [];
+
+// Persistent background particle rAF loop — created ONCE, shared by all renderSpaceView calls
+let _spaceBgRunning=false;
+function spaceBgFrame(){
+  if(!_spaceBgRunning){_spaceBgRunning=false;return;}
+  if(currentView!=='space'){requestAnimationFrame(spaceBgFrame);return;}
+  var cv=document.getElementById('space-canvas');
+  if(!cv||cv.style.display==='none'){requestAnimationFrame(spaceBgFrame);return;}
+  var ctx=cv.getContext('2d');
+  var W=window.innerWidth, H=window.innerHeight;
+  ctx.clearRect(0,0,W,H);
+  for(var i=0;i<spaceParticles.length;i+=2){
+    var p=spaceParticles[i];
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle='rgba(201,169,110,'+p.alpha+')';ctx.fill();
+  }
+  requestAnimationFrame(spaceBgFrame);
+}
+function startSpaceBgLoop(){
+  if(_spaceBgRunning) return;
+  _spaceBgRunning=true;
+  spaceBgFrame();
+}
+function stopSpaceBgLoop(){
+  _spaceBgRunning=false;
+}
+
+function initSpaceParticles(){
+  spaceParticles=[];
+  for(var i=0;i<20;i++){
+    spaceParticles.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.2+0.4,vx:(Math.random()-0.5)*0.2,vy:(Math.random()-0.5)*0.15,alpha:Math.random()*0.22+0.05});
+  }
+}
+
+function vadToScreen(w){
+  var h = getHalo(w);
+  // Base positions (offset handled by layer CSS transform)
+  var cx=window.innerWidth/2, cy=window.innerHeight/2;
+  var sx=window.innerWidth*0.40*spaceState.scale, sy=window.innerHeight*0.35*spaceState.scale;
+  if(!h) return {x:cx, y:cy};
+  var hash=0, len=w.length;
+  for(var i=0;i<len;i++){hash=((hash<<5)-hash+w.charCodeAt(i))|0;}
+  var jx=((hash&0xFFFF)/65535-0.5)*sx*0.12;
+  var jy=(((hash>>16)&0xFFFF)/65535-0.5)*sy*0.12;
+  return {x:cx+(h.v-4.5)/4*sx+jx, y:cy+(4.5-h.a)/4*sy+jy};
+}
+
+function getSpaceWordAt(mx,my){
+  if(typeof allWordData==='undefined') return null;
+  if(!spaceWordCache||spaceWordCache.scale!==spaceState.scale){
+    var list=[];
+    for(var i=0;i<allWordData.length;i++){
+      var d=allWordData[i];if(d.pos)list.push({word:d.word,x:d.pos.x,y:d.pos.y,hr:22});
+    }
+    spaceWordCache={scale:spaceState.scale,list:list};
+  }
+  var best=null, bestDist=22;
+  for(var i=0;i<spaceWordCache.list.length;i++){
+    var w=spaceWordCache.list[i];
+    if(Math.abs(mx-w.x)>bestDist||Math.abs(my-w.y)>bestDist)continue;
+    var d=Math.hypot(mx-w.x,my-w.y);
+    if(d<w.hr && d<bestDist){best=w.word;bestDist=d;}
+  }
+  return best;
+}
+var spaceWordCache=null;
+var allWordData=[];
+
+
+// Constellation shapes — VAD-driven star positions
+var CONSTELLATIONS=[
+  {id:'intellect',c:'#6E5494',zh:'明辨之座',en:'Discernment',n:5},
+  {id:'strength',c:'#B8954A',zh:'沉毅之座',en:'Fortitude',n:5},
+  {id:'joy',c:'#DC8A6E',zh:'韶光之座',en:'Radiance',n:6},
+  {id:'serenity',c:'#7DAE96',zh:'静渊之座',en:'Stillness',n:4},
+  {id:'melancholy',c:'#6B85A0',zh:'凝思之座',en:'Contemplation',n:6},
+  {id:'aggression',c:'#A8483A',zh:'炽焰之座',en:'Ardor',n:4},
+  {id:'anxiety',c:'#988AA8',zh:'萦惑之座',en:'Unease',n:4},
+  {id:'transience',c:'#B894A8',zh:'流光之座',en:'Ephemera',n:5}
+];
+// Map family names to constellation indices
+var familyToConst={
+  intellect:0,strength:1,joy:2,serenity:3,
+  melancholy:4,aggression:5,anxiety:6,transience:7,
+  healing:3 // merged into serenity
+};
+// Position each constellation center in VAD-like space
+var constPositions=[
+  {cx:0.85,cy:0.28,span:0.11},  // intellect - top right
+  {cx:0.90,cy:0.72,span:0.11},  // strength - right lower
+  {cx:0.55,cy:0.12,span:0.12},  // joy - top center
+  {cx:0.30,cy:0.40,span:0.11},  // serenity - mid-left
+  {cx:0.08,cy:0.32,span:0.11},  // melancholy - left upper
+  {cx:0.62,cy:0.50,span:0.10},  // aggression - center-right
+  {cx:0.72,cy:0.90,span:0.10},  // anxiety - bottom right
+  {cx:0.18,cy:0.82,span:0.11}   // transience - bottom left
+];
+
+function renderSpaceView(){
+  // Clean up old overlays to prevent ghosting on bank switch
+  ["const-labels","space-fade","space-welcome","space-legend-panel","space-axis","space-axis-v","space-tooltip","space-dom-layer"].forEach(function(id){
+    var e=document.getElementById(id);if(e)e.remove();
+  });
+  // === Canvas only used for background particles ===
+  var cv=document.getElementById('space-canvas'),ctx=cv.getContext('2d');
+  cv.width=window.innerWidth*(window.devicePixelRatio||1);cv.height=window.innerHeight*(window.devicePixelRatio||1);
+  cv.style.width=window.innerWidth+'px';cv.style.height=window.innerHeight+'px';
+  ctx.setTransform(1,0,0,1,0,0);ctx.scale(window.devicePixelRatio||1,window.devicePixelRatio||1);
+
+  // === DOM layer for word dots (independent event handling per word) ===
+  var oldLayer=document.getElementById('space-dom-layer');
+  if(oldLayer) oldLayer.remove();
+  var layer=document.createElement('div');
+  layer.id='space-dom-layer';
+  layer.style.cssText='position:fixed;inset:0;z-index:4;pointer-events:auto;overflow:hidden;';
+  document.body.appendChild(layer);
+
+  // === Constellation name labels (on canvas, not DOM) ===
+  var constLabelsCv=document.createElement('canvas');
+  constLabelsCv.id='const-labels';
+  constLabelsCv.style.cssText='position:fixed;inset:0;z-index:50;pointer-events:none;';
+  constLabelsCv.width=window.innerWidth;constLabelsCv.height=window.innerHeight;
+  document.body.appendChild(constLabelsCv);
+  var constLabelsCtx=constLabelsCv.getContext('2d');
+
+  // === Radial fade mask for depth (center bright, edges dark) ===
+  var fadeCv=document.createElement('canvas');
+  fadeCv.id='space-fade';
+  fadeCv.style.cssText='position:fixed;inset:0;z-index:10;pointer-events:none;';
+  fadeCv.width=window.innerWidth;fadeCv.height=window.innerHeight;
+  var fadeCtx=fadeCv.getContext('2d');
+  var W=fadeCv.width, H=fadeCv.height;
+  var grd=fadeCtx.createRadialGradient(W*0.5,H*0.5,W*0.05,W*0.5,H*0.55,Math.max(W,H)*0.95);
+  grd.addColorStop(0,'rgba(255,255,255,0)');
+  grd.addColorStop(0.5,'rgba(255,255,255,0)');
+  grd.addColorStop(0.78,'rgba(255,255,255,0.12)');
+  grd.addColorStop(1,'rgba(255,255,255,0.28)');
+  fadeCtx.fillStyle=grd;fadeCtx.fillRect(0,0,W,H);
+  document.body.appendChild(fadeCv);
+
+  // === Welcome card (first visit to space mode) ===
+  var oldCard=document.getElementById('space-welcome');
+  if(oldCard) oldCard.remove();
+  var welcome=document.createElement('div');
+  welcome.id='space-welcome';
+  welcome.style.cssText='position:fixed;top:120px;left:50%;transform:translateX(-50%);z-index:200;background:rgba(255,255,255,0.96);border:1.5px solid rgba(122,75,94,0.3);border-radius:14px;padding:16px 24px;box-shadow:0 8px 32px rgba(61,44,44,0.15);font-family:system-ui;max-width:400px;text-align:center;pointer-events:auto;transition:opacity 0.6s;opacity:1;';
+  var zh=cfg.lang===1;
+  welcome.innerHTML='<div style="font:italic 600 18px Georgia,serif;color:var(--wine);margin-bottom:6px">'+(zh?'欢迎来到词汇宇宙':'Welcome to Vocabulary Cosmos')+' ✨</div>'+
+    '<div style="font-size:12px;color:#6B7B8D;line-height:1.6">'+
+    (zh?'每颗星 = 一个词 | 星座 = 情绪家族<br>悬停看词 · 单击学习':'Each star = a word | Constellation = emotion<br>Hover for word · Click to learn')+
+    '</div>'+
+    '<div style="font-size:11px;color:var(--gold);margin-top:8px">'+(zh?'同族词聚在一起 — 一次学一片':'Words of the same family cluster — learn in groups')+'</div>';
+  document.body.appendChild(welcome);
+  setTimeout(function(){if(welcome.parentNode){welcome.style.opacity='0';setTimeout(function(){if(welcome.parentNode)welcome.remove();},600);}}, 8000);
+
+  // === Legend panel (always visible, no toggle button) ===
+  var legPanel=document.createElement('div');
+  legPanel.id='space-legend-panel';
+  legPanel.style.cssText='position:fixed;bottom:14px;right:14px;z-index:200;background:rgba(255,255,255,0.92);border:1px solid rgba(122,75,94,0.15);border-radius:10px;padding:8px 10px;box-shadow:0 2px 12px rgba(61,44,44,0.08);font-family:system-ui;pointer-events:auto;width:150px;backdrop-filter:blur(8px);';
+  var families=[
+    {trait:'智慧',traitEn:'Intellect',name:{en:'Discernment',zh:'明辨之座'},color:'#6E5494'},
+    {trait:'坚韧',traitEn:'Fortitude',name:{en:'Fortitude',zh:'沉毅之座'},color:'#B8954A'},
+    {trait:'欢愉',traitEn:'Radiance',name:{en:'Radiance',zh:'韶光之座'},color:'#DC8A6E'},
+    {trait:'宁静',traitEn:'Stillness',name:{en:'Stillness',zh:'静渊之座'},color:'#7DAE96'},
+    {trait:'忧郁',traitEn:'Contemplation',name:{en:'Contemplation',zh:'凝思之座'},color:'#6B85A0'},
+    {trait:'炽烈',traitEn:'Ardor',name:{en:'Ardor',zh:'炽焰之座'},color:'#A8483A'},
+    {trait:'萦惑',traitEn:'Unease',name:{en:'Unease',zh:'萦惑之座'},color:'#988AA8'},
+    {trait:'流光',traitEn:'Ephemera',name:{en:'Ephemera',zh:'流光之座'},color:'#B894A8'}
+  ];
+  var legHTML='<div style="font:600 9.5px Georgia,serif;color:var(--wine);margin-bottom:6px;letter-spacing:0.5px;text-align:center">'+(zh?'情感图例':'Emotion Families')+'</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 8px">'+
+    (function(){
+      var out='';
+      for(var fi=0;fi<families.length;fi++){
+        var f=families[fi];
+        out+='<div style="display:flex;align-items:center;gap:4px;font-size:8.5px;color:#3D2C2C"><span style="width:6px;height:6px;border-radius:50%;background:'+f.color+';display:inline-block;flex-shrink:0"></span><span style="font-weight:600">'+(zh?f.trait:f.traitEn)+'</span></div>';
+      }
+      return out;
+    })()+
+    '</div>';
+  legPanel.innerHTML=legHTML;
+  document.body.appendChild(legPanel);
+  // Always visible (no toggle button)
+  legPanel.style.display='block';
+  // Store globally so language toggle can update it
+  window._legPanel=legPanel; window._legFamilies=families;
+
+  // === VAD Axis labels (more visible, positioned to avoid welcome card overlap) ===
+  var axLabel=document.createElement('div');
+  axLabel.id='space-axis';
+  axLabel.style.cssText='position:fixed;top:50%;right:8px;transform:translateY(-50%) rotate(-90deg);transform-origin:center;z-index:5;pointer-events:none;font:600 10px system-ui;letter-spacing:2px;color:rgba(91,79,98,0.65);text-transform:uppercase;';
+  axLabel.textContent=zh?'平静 ← 唤醒度 → 兴奋':'calm ← arousal → excited';
+  document.body.appendChild(axLabel);
+  var axLabelV=document.createElement('div');
+  axLabelV.id='space-axis-v';
+  axLabelV.style.cssText='position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:5;pointer-events:none;font:600 10px system-ui;letter-spacing:2px;color:rgba(91,79,98,0.65);text-transform:uppercase;';
+  axLabelV.textContent=zh?'愉悦 ← 情感强度 → 不悦':'pleasant ← valence → unpleasant';
+  document.body.appendChild(axLabelV);
+
+  // Build word data — pre-cache meaning for O(1) hover+click
+  allWordData=[];
+  var bankWords=WB[cfg.wb]||[];
+  var wMeaningMap={};for(var i=0;i<bankWords.length;i++){wMeaningMap[bankWords[i][0]]=bankWords[i][1];}
+  // Stash globally so dot click handlers can resolve meanings on demand
+  window._wMeaningMap=wMeaningMap;
+  console.log('[Constellation] Bank total:', bankWords.length, ' | With halo+fallback:', allWordData.length);
+  for(var i=0;i<bankWords.length;i++){
+    var w=bankWords[i][0], h=getHalo(w);
+    if(h&&familyToConst[h.family]!=null){
+      allWordData.push({word:w, halo:h, meaning:wMeaningMap[w]||'', pos:null, dot:null, cIdx:familyToConst[h.family]});
+    }
+  }
+  console.log('[Space DOM] Bank:', cfg.wb, 'allWordData:', allWordData.length);
+
+  // Compute positions
+  function updatePositions(){
+    // Compute constellation star positions — VAD-based but shape-optimized
+    var W=window.innerWidth, H=window.innerHeight;
+    var famStacks={};for(var fi=0;fi<CONSTELLATIONS.length;fi++)famStacks[fi]=[];
+    for(var i=0;i<allWordData.length;i++)famStacks[allWordData[i].cIdx].push(i);
+    for(var fi=0;fi<CONSTELLATIONS.length;fi++){
+      var c=CONSTELLATIONS[fi], cp=constPositions[fi];
+      var cx=cp.cx*W, cy=cp.cy*H, sp=cp.span*Math.min(W,H);
+      var stack=famStacks[fi], n=stack.length;
+      if(n===0) continue;
+      // Assign positions in a circular constellation pattern with VAD drift
+      for(var si=0;si<n;si++){
+        var wd=allWordData[stack[si]];
+        var raw=vadToScreen(wd.word);
+        // Blend: 40% VAD position + 60% constellation shape — wider ellipse avoids edge overlap
+        var angle=(2*Math.PI/n)*si;
+        var shapeX=cx+Math.cos(angle)*sp*1.05;
+        var shapeY=cy+Math.sin(angle)*sp*0.65;
+        wd.pos={x:raw.x*0.4+shapeX*0.6, y:raw.y*0.4+shapeY*0.6, constX:shapeX, constY:shapeY};
+      }
+    }
+  }
+  updatePositions();
+  
+  // === Background particles — persistent global loop (no per-call leak) ===
+  startSpaceBgLoop();
+
+  // === LOD + DOM dot creation ===
+  // At scale < 0.7: show only family region blocks (no individual dots)
+  // At scale 0.7-1.0: show only mastered/learning words as small dots
+  // At scale >= 1.0: show all words as full dots with hover labels
+  var buildRunning=false;
+  function drawConstellationOverlay(){
+    if(!constLabelsCtx) return;
+    constLabelsCtx.clearRect(0,0,constLabelsCv.width,constLabelsCv.height);
+    var W=window.innerWidth, H=window.innerHeight, zh=cfg.lang===1;
+    // Use ALL words (not just LOD-rendered dots) for accurate counts
+    var famStacks={};for(var fi=0;fi<CONSTELLATIONS.length;fi++)famStacks[fi]=[];
+    for(var i=0;i<allWordData.length;i++){famStacks[allWordData[i].cIdx].push(allWordData[i]);}
+    for(var fi=0;fi<CONSTELLATIONS.length;fi++){
+      var c=CONSTELLATIONS[fi], stack=famStacks[fi], n=stack.length;
+      if(n===0) continue;
+      var sx=0,sy=0;
+      for(var si=0;si<n;si++){sx+=stack[si].pos.x;sy+=stack[si].pos.y;}
+      var pcx=sx/n, pcy=sy/n;
+      var sp=Math.min(W,H)*constPositions[fi].span;
+      // Position label BELOW constellation dots to avoid overlap
+      var nameY=pcy+sp*1.25;
+      var name=zh?c.zh:c.en;
+      constLabelsCtx.font='italic 700 16px Georgia,serif';
+      var nmW=constLabelsCtx.measureText(name).width;
+      var pad=8;
+      // Pill background for legibility against dot clutter
+      constLabelsCtx.fillStyle='rgba(255,255,255,0.88)';
+      constLabelsCtx.globalAlpha=1;
+      constLabelsCtx.beginPath();
+      constLabelsCtx.roundRect(pcx-nmW/2-pad, nameY-14, nmW+pad*2, 22, 11);
+      constLabelsCtx.fill();
+      // Text with subtle shadow
+      constLabelsCtx.shadowColor=c.c;
+      constLabelsCtx.shadowBlur=4;
+      constLabelsCtx.fillStyle=c.c;
+      constLabelsCtx.globalAlpha=0.9;
+      constLabelsCtx.textAlign='center';
+      constLabelsCtx.fillText(name, pcx, nameY+2);
+      constLabelsCtx.shadowBlur=0;
+      // Progress bar
+      // Count explored words (any interaction = state >= 1)
+      var explored=0;
+      for(var si=0;si<n;si++){
+        var card=log.fsrsCards[stack[si].word]||{};
+        if(card.state>=1) explored++;
+      }
+      var pct=n>0?explored/n:0;
+      var barW=80, barH=4;
+      var barX=pcx-barW/2, barY=nameY+10;
+      // Background bar
+      constLabelsCtx.fillStyle=c.c+'22';
+      constLabelsCtx.fillRect(barX,barY,barW,barH);
+      // Progress fill
+      var fillW=barW*pct;
+      constLabelsCtx.fillStyle=c.c;
+      constLabelsCtx.globalAlpha=0.9;
+      constLabelsCtx.fillRect(barX,barY,fillW,barH);
+      // Bar text with pill background for legibility
+      constLabelsCtx.globalAlpha=0.85;
+      constLabelsCtx.font='600 10px system-ui';
+      var txt=explored+' / '+n;
+      var txtW=constLabelsCtx.measureText(txt).width;
+      var bgPad=5;
+      constLabelsCtx.fillStyle='rgba(255,255,255,0.7)';
+      constLabelsCtx.beginPath();
+      constLabelsCtx.roundRect(pcx-txtW/2-bgPad, barY+barH+4, txtW+bgPad*2, 14, 7);
+      constLabelsCtx.fill();
+      constLabelsCtx.fillStyle=c.c;
+      constLabelsCtx.fillText(explored+' / '+n, pcx, barY+barH+14);
+      constLabelsCtx.globalAlpha=1;
+    }
+  }
+
+var buildRunning=false;
+  function buildDots(){
+    if(buildRunning) return;
+    buildRunning=true;
+    try{
+    if(!allWordData||allWordData.length===0){buildRunning=false;return}
+    if(!allWordData[0].pos){updatePositions();}
+    if(!layer.parentNode){buildRunning=false;return}
+    layer.innerHTML='';
+    var sCal=spaceState.scale;
+    var W=window.innerWidth, H=window.innerHeight;
+    var visible=[];
+    for(var i=0;i<allWordData.length;i++){
+      var d=allWordData[i], p=d.pos;
+      if(!p || p.x<-50||p.x>W+50 || p.y<-50||p.y>H+50) continue;
+      var card=log.fsrsCards[d.word]||{};
+      var isM=card.s>=15, isL=card.state>=1;
+      if(sCal<1.0 && !isL && !isM) continue;
+      visible.push(d);
+    }
+    var maxDots=2000;
+    if(visible.length>maxDots) visible=visible.slice(0,maxDots);
+
+    // ═══ innerHTML bulk insert: single DOM operation instead of 2000 createElement calls ═══
+    var htmlParts=[];
+    for(var vi=0;vi<visible.length;vi++){
+      var d=visible[vi], p=d.pos;
+      var arousal=d.halo.a||5;
+      var sz=4+arousal*0.6;
+      var dotOp=(0.4+arousal*0.04).toFixed(2);
+      var hitPad=14, totalSz=sz+hitPad*2;
+      var glowColor=CONSTELLATIONS[d.cIdx]?CONSTELLATIONS[d.cIdx].c:d.halo.color;
+      var twCls=Math.floor(Math.random()*4);
+      // ═══ Three-tier opacity: unexplored (0.18) → learning (0.50) → mastered (0.82) ═══
+      var card=log.fsrsCards[d.word]||{};
+      if(!card||card.state===0){
+        dotOp='0.18';        // muted — constellation shape still visible at distance
+      }else if(card.s>=15){
+        dotOp='0.82';        // bright — mastered words pop out
+        sz+=1.5; totalSz=sz+hitPad*2; // slightly larger
+      }else{
+        dotOp='0.50';        // learning — clearly visible
+      }
+      var meaning=window._wMeaningMap?window._wMeaningMap[d.word]:'';
+      if(!meaning){for(var mj=0;mj<bankWords.length;mj++){if(bankWords[mj][0]===d.word){meaning=bankWords[mj][1];break;}}}
+      // Escape double quotes in meaning string
+      var safeM=(meaning||'').replace(/"/g,'&quot;');
+      // Pre-compute px/py positions (inline transform prevents per-dot JS during hover)
+      var lx=(p.x-totalSz/2).toFixed(1), ly=(p.y-totalSz/2).toFixed(1);
+      htmlParts.push(
+        '<div class="space-dot tw'+twCls+
+        '" style="position:absolute;left:0;top:0;width:'+totalSz+'px;height:'+totalSz+'px;box-sizing:border-box;padding:'+hitPad+'px;background:'+glowColor+';background-clip:content-box;border-radius:50%;opacity:'+dotOp+';transform:translate3d('+lx+'px,'+ly+'px,0);pointer-events:auto;cursor:pointer'+
+        '" data-w="'+d.word+
+        '" data-m="'+safeM+
+        '" data-_px="'+p.x+'" data-_py="'+p.y+'" data-_sz="'+totalSz+
+        '"></div>'
+      );
+      // Store pos for lightUpStar reference
+      d._pos=p;d._totalSz=totalSz;
+    }
+    layer.innerHTML=htmlParts.join('');
+    // Rebuild dot references for lightUpStar
+    var allDots=layer.querySelectorAll('.space-dot');
+    for(var di=0;di<allDots.length&&di<visible.length;di++){
+      visible[di].dot=allDots[di];
+    }
+
+    // === Event delegation: 3 listeners total for all dots ===
+    if(!layer._delegated){
+      layer._delegated=true;
+      // Single mousemove handler — per-pixel, throttled to ~30fps to prevent layout thrashing
+      var _lastDot=null, _moveThrottle=0;
+      layer.addEventListener('mousemove',function(e){
+        if(Date.now()-_moveThrottle<28) return;
+        _moveThrottle=Date.now();
+        var dt=e.target.closest('.space-dot');
+        if(!dt){
+          if(_lastDot){
+            var px=parseFloat(_lastDot.dataset._px), py=parseFloat(_lastDot.dataset._py), sz=parseFloat(_lastDot.dataset._sz);
+            _lastDot.style.transform='translate3d('+(px-sz/2).toFixed(1)+'px,'+(py-sz/2).toFixed(1)+'px,0) scale(1)';
+            _lastDot.style.opacity='';_lastDot.style.zIndex='';
+          }
+          _lastDot=null;spaceState.hoveredWord=null;hideSpaceTooltip();return;
+        }
+        if(_lastDot===dt) return;
+        // Different dot — restore previous, highlight new
+        if(_lastDot){
+          var opx=parseFloat(_lastDot.dataset._px), opy=parseFloat(_lastDot.dataset._py), osz=parseFloat(_lastDot.dataset._sz);
+          _lastDot.style.transform='translate3d('+(opx-osz/2).toFixed(1)+'px,'+(opy-osz/2).toFixed(1)+'px,0) scale(1)';
+          _lastDot.style.opacity='';_lastDot.style.zIndex='';
+        }
+        _lastDot=dt;spaceState.hoveredWord=dt.dataset.w;
+        var npx=parseFloat(dt.dataset._px), npy=parseFloat(dt.dataset._py), nsz=parseFloat(dt.dataset._sz);
+        dt.style.transform='translate3d('+(npx-nsz/2).toFixed(1)+'px,'+(npy-nsz/2).toFixed(1)+'px,0) scale(2.2)';
+        dt.style.opacity='1';dt.style.zIndex='100';
+        showSpaceTooltip(dt.dataset.w,{x:npx,y:npy});
+      });
+      layer.addEventListener('click',function(e){
+        var dt=e.target.closest('.space-dot');
+        if(!dt) return;
+        e.stopPropagation();
+        document.getElementById('quiz-overlay').classList.add('active');
+        startQuizDirect(dt.dataset.w, dt.dataset.m);
+      });
+    }
+
+    var totFrag=0;for(var fi=0;fi<CONSTELLATIONS.length;fi++){var s=0;for(var si=0;si<allWordData.length;si++)if(allWordData[si].cIdx===fi&&allWordData[si].dot)s++;totFrag+=s;}console.log('[Constellation] Rendered:', totFrag, 'dots / Bank total:', bankWords.length);
+    drawConstellationOverlay();
+    }catch(e){console.error("buildDots error:",e)}
+    buildRunning=false;
+  }
+  // Build dots — deferable for smoother UI transitions
+  var _deferBuild = renderSpaceView._deferNext;
+  if(_deferBuild){
+    renderSpaceView._deferNext=false;
+    requestAnimationFrame(function(){buildDots();});
+  } else {
+    buildDots();
+  }
+
+  // === Tooltip element ===
+  var tip=document.createElement('div');
+  tip.id='space-tooltip';
+  tip.style.cssText='position:fixed;z-index:200;background:rgba(255,255,255,0.97);color:#3D2C2C;border:1.5px solid rgba(122,75,94,0.4);border-radius:8px;padding:6px 12px;font:600 13px Georgia,serif;pointer-events:none;opacity:0;transition:opacity 0.15s;box-shadow:0 4px 16px rgba(61,44,44,0.18);transform:translate(-50%,-130%);';
+  document.body.appendChild(tip);
+
+  function showSpaceTooltip(w, p){
+    var card=log.fsrsCards[w]||{};
+    var state=card.state||0;
+    var zh=cfg.lang===1;
+    var label='';
+    if(state>=1){
+      var s=card.s||1;
+      if(s>=15) label=zh?'  ✦ 已掌握':'  ✦ mastered';
+      else label=zh?'  ✧ 学习中':'  ✧ learning';
+    } else {
+      label=zh?'  ☆ 未探索':'  ☆ unseen';
+    }
+    if(!tip._wordEl){var we=document.createElement('b');tip.appendChild(we);var le=document.createElement('span');le.style.cssText='font-size:10px;opacity:0.7;margin-left:4px';tip.appendChild(le);tip._wordEl=we;tip._labelEl=le;}
+    tip._wordEl.textContent=w;
+    tip._labelEl.textContent=label;
+    tip.style.left=p.x+'px';
+    tip.style.top=p.y+'px';
+    tip.style.opacity='1';
+  }
+  function hideSpaceTooltip(){
+    tip.style.opacity='0';
+  }
+
+  // Light up a dot after quiz completion
+function lightUpStar(word, kind){
+    for(var i=0;i<allWordData.length;i++){
+      if(allWordData[i].word===word&&allWordData[i].dot){
+        var dot=allWordData[i].dot;
+        var pos=allWordData[i].pos;
+        var sz=dot.style.width||'10px';
+        var c=CONSTELLATIONS[allWordData[i].cIdx]?CONSTELLATIONS[allWordData[i].cIdx].c:'#C9A96E';
+        // Bounce animation
+        dot.style.transition='transform 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+        dot.style.transform='translate3d('+(pos.x-parseFloat(sz)/2)+'px,'+(pos.y-parseFloat(sz)/2)+'px,0) scale(2.4)';
+        setTimeout(function(){
+          if(allWordData[i]&&allWordData[i].pos){
+            dot.style.transform='translate3d('+(allWordData[i].pos.x-parseFloat(sz)/2)+'px,'+(allWordData[i].pos.y-parseFloat(sz)/2)+'px,0) scale(1)';
+          }
+        },250);
+        // Burst particles (8 dots)
+        for(var pi=0;pi<8;pi++){
+          var angle=Math.PI*2/8*pi,dist=Math.random()*30+15;
+          var p=document.createElement('div');
+          p.style.cssText='position:fixed;left:'+pos.x+'px;top:'+pos.y+'px;width:'+(Math.random()*5+3)+'px;height:'+(Math.random()*5+3)+'px;border-radius:50%;background:'+c+';z-index:99;pointer-events:none;transition:transform 0.7s,opacity 0.7s;';
+          document.body.appendChild(p);
+          setTimeout(function(){p.style.transform='translate('+(Math.cos(angle)*dist)+'px,'+(Math.sin(angle)*dist)+'px) scale(0)';p.style.opacity='0';},10);
+          setTimeout(function(){if(p.parentNode)p.remove();},720);
+        }
+        // Light-up state based on kind (correct/wrong)
+        var card=log.fsrsCards[word]||{};
+        var explored=card.state>=1;
+        if(explored){
+          dot.style.opacity='0.95';
+          dot.style.boxShadow='0 0 6px 1px '+c;
+        } else {
+          dot.style.opacity='0.7';
+        }
+        break;
+      }
+    }
+    drawConstellationOverlay();
+}
+
+// === Wheel: ignored (zoom removed — enhances only dot effects) ===
+layer.onwheel=null;
+
+  // Space dot touch support: show tooltip on long-press, quiz on tap
+  layer.addEventListener('touchstart',function(e){
+    var dot=e.target.closest('.space-dot');
+    if(!dot||e.touches.length!==1) return;
+    // Tap: simulate click for quiz
+    var w=dot.dataset.w;
+    if(w){
+      spaceState._touchStartTime=Date.now();
+      spaceState._touchStartWord=w;
+      // Show tooltip immediately on touch
+      spaceState.hoveredWord=w;
+      var items=WB[cfg.wb]||[], entry=null;
+      for(var j=0;j<items.length;j++){if(items[j][0]===w){entry=items[j];break;}}
+      if(entry){
+        var posData=null;
+        for(var ai=0;ai<allWordData.length;ai++){if(allWordData[ai].word===w){posData=allWordData[ai].pos;break;}}
+        if(posData) showSpaceTooltip(w, posData);
+      }
+    }
+  },{passive:false});
+  layer.addEventListener('touchend',function(e){
+    var dt=Date.now()-(spaceState._touchStartTime||0);
+    if(dt<500&&spaceState._touchStartWord){
+      // Short tap → quiz
+      var w=spaceState._touchStartWord;
+      var items=WB[cfg.wb]||[], entry=null;
+      for(var j=0;j<items.length;j++){if(items[j][0]===w){entry=items[j];break;}}
+      if(entry){
+        document.getElementById('quiz-overlay').classList.add('active');
+        startQuizDirect(entry[0], entry[1]);
+      }
+    }
+    spaceState._touchStartWord=null;
+    spaceState._touchStartTime=0;
+    spaceState.hoveredWord=null;
+    hideSpaceTooltip();
+  });
+
+  // Positions are static; no periodic update needed (was causing visible drift)
+}
+
+function rebuildSpaceLegend(){
+  var panel=window._legPanel;
+  var fams=window._legFamilies;
+  if(!panel||!fams||currentView!=='space') return;
+  var zh=cfg.lang===1;
+  // Title (first div child)
+  var titleEl=panel.firstElementChild;
+  if(titleEl) titleEl.textContent=zh?'情感图例':'Emotion Families';
+  // Trait labels: each grid item has nested spans, the bold one is the trait name
+  var grid=titleEl?titleEl.nextElementSibling:null;
+  var items=grid?grid.children:null;
+  for(var fi=0;fi<(items?items.length:0)&&fi<fams.length;fi++){
+    var boldSpan=items[fi].querySelector('span[style*="600"]');
+    if(boldSpan) boldSpan.textContent=zh?fams[fi].trait:fams[fi].traitEn;
+  }
+}
+
+function updateSpaceOverlayLang(){
+  var ax=document.getElementById('space-axis');
+  var axV=document.getElementById('space-axis-v');
+  var zh=cfg.lang===1;
+  if(ax) ax.textContent=zh?'沉思 ← 内在世界 → 外放':'contemplative ← inner → expressive';
+  if(axV) axV.textContent=zh?'忧郁 ← 情绪基调 → 欢欣':'melancholic ← emotion → euphoric';
+  // Update welcome card text if visible
+  var w=document.getElementById('space-welcome');
+  if(w){
+    var parts=w.querySelectorAll('div');
+    if(parts[0]) parts[0].innerHTML=(zh?'欢迎来到词汇宇宙':'Welcome to Vocabulary Cosmos')+' ✨';
+    if(parts[1]) parts[1].innerHTML=zh?'每颗光点 = 一个词 | 颜色 = 情绪 | 位置 = 情感强度<br>悬停看词 · 单击学习':'Each dot = a word | Color = emotion | Position = intensity<br>Hover for word · Click to learn';
+    if(parts[2]) parts[2].innerHTML=zh?'同族词聚在一起 — 一次学一片':'Words of the same family cluster — learn in groups';
+  }
+  // Refresh progress panel + review button to reflect current lang
+  if(typeof updateProgress==='function') try{updateProgress();}catch(e){}
+}
+
+function openProbe(word){
+  spaceState.selectedWord=word;
+  var h=getHalo(word), card=log.fsrsCards[word]||{};
+  var depth=getFSRSDepth(word);
+
+  document.getElementById('probe-word').textContent=word;
+  document.getElementById('probe-phonetic').textContent='';
+  document.getElementById('probe-cn').textContent='';
+
+  // Find meaning from WB
+  for(var bk in WB){var items=WB[bk];for(var i=0;i<items.length;i++){if(items[i][0]===word){document.getElementById('probe-cn').textContent=items[i][1];break;}}}
+
+  // VAD
+  if(h){document.getElementById('probe-vad').textContent='V('+h.v+') A('+h.a+') D('+h.d+')';}
+  else{document.getElementById('probe-vad').textContent='Not yet labeled';}
+
+  // Emotion tags
+  var tagsEl=document.getElementById('probe-tags');
+  if(h&&EMOTION_FAMILIES[h.family]){
+    var fam=EMOTION_FAMILIES[h.family];
+    var html='<span class="probe-tag" style="background:'+fam.bg+';border-color:'+fam.border+';color:'+fam.color+'">'+fam.label+'</span>';
+    (h.traits||[]).forEach(function(t){html+='<span class="probe-tag" style="background:rgba(107,123,141,0.06);border-color:rgba(107,123,141,0.15);color:#6B7B8D">'+t+'</span>';});
+    tagsEl.innerHTML=html;
+  }else{tagsEl.innerHTML='<span class="probe-tag" style="background:rgba(107,123,141,0.06);border-color:rgba(107,123,141,0.15);color:#6B7B8D">待标注</span>';}
+
+  // Depth bar
+  setTimeout(function(){
+    var fill=document.getElementById('probe-depth-fill');
+    fill.style.width=depth+'%';
+    fill.style.background=depth>70?'linear-gradient(90deg,#C9A96E,#D4A76A)':(depth>30?'linear-gradient(90deg,#CD5C5C,#D4816B)':'linear-gradient(90deg,#D4C5B0,#C9B99A)');
+  },50);
+
+  // Neighbors
+  var neighborsEl=document.getElementById('probe-neighbor-list');
+  if(h){
+    var neighbors=Object.keys(HALO).filter(function(k){return HALO[k].family===h.family&&k!==word;}).slice(0,3);
+    neighborsEl.innerHTML=neighbors.map(function(n){
+      var nc=EMOTION_FAMILIES[h.family];
+      return '<span class="neighbor-chip" style="background:'+nc.bg+';border:1px solid '+nc.border+';color:'+nc.color+'" onclick="openProbe(\''+n+'\')">'+n+'</span>';
+    }).join('');
+  }else{neighborsEl.innerHTML='<span style="font-size:10px;color:var(--slate)">暂无</span>';}
+
+  // Position
+  var pos=vadToScreen(word);
+  var probe=document.getElementById('depth-probe');
+  var pw=320,ph=360;
+  var px=pos.x-pw/2,py=pos.y-ph-30;
+  if(px<10)px=10;if(px+pw>window.innerWidth-10)px=window.innerWidth-pw-10;
+  if(py<10)py=pos.y+30;
+  probe.style.left=px+'px';probe.style.top=py+'px';
+  probe.classList.add('active');
+}
+
+function closeProbe(){
+  document.getElementById('depth-probe').classList.remove('active');
+  spaceState.selectedWord=null;
+}
+
+const I18N={
+  'Word Bank':{en:'Word Bank',zh:'词库'},
+  'Animation Mode':{en:'Animation Mode',zh:'动画模式'},
+  'Background':{en:'Background',zh:'背景'},
+  'Speed':{en:'Speed',zh:'速度'},
+  'Density':{en:'Density',zh:'密度'},
+  'Word Dwell':{en:'Word Dwell',zh:'词停留'},
+  'Font Family':{en:'Font Family',zh:'字体'},
+  'Font Size':{en:'Font Size',zh:'字号'},
+  'Color Guide':{en:'Color Guide',zh:'色彩指南'},
+  'Settings':{en:'Settings',zh:'设置'},
+  'My Words':{en:'My Words',zh:'我的单词'},
+  'Reset this bank':{en:'↻ Reset this bank',zh:'↻ 重置此词库'},
+  'Review complete!':{en:'Review complete!',zh:'复习完成！'},
+  'No wrong words':{en:'No wrong words',zh:'没有错词了'},
+  'No words to review':{en:'No words to review',zh:'没有待复习词'},
+  'Reset':{en:'Reset',zh:'已重置'},
+  'Luminaria':{en:'Luminaria',zh:'浮光词集'},
+  'Review today →':{en:'Review {n} today →',zh:'今日待复习 {n} 词 →'},
+  'Review complete':{en:'Review complete',zh:'今日复习已完成'},
+  'No words':{en:'No words',zh:'暂无'},
+  'New':{en:'New',zh:'未学'},
+  'Learning':{en:'Learning',zh:'新学'},
+  'Review':{en:'Review',zh:'复习'},
+  'Mastered':{en:'Mastered',zh:'掌握'},
+  'Difficult':{en:'Difficult',zh:'易错'},
+  'Today':{en:'Today',zh:'今日'},
+  'Acc.':{en:'Accuracy',zh:'正确率'},
+  'Streak':{en:'Streak',zh:'连续'},
+  'Vocab':{en:'Vocab',zh:'词汇量'},
+  'Wrong':{en:'Wrong',zh:'错词'},
+  'Days':{en:'days',zh:'天'},
+  'Rate':{en:'rate',zh:'正确率'},
+  'Reviewed':{en:'reviewed',zh:'学习过'},
+  'Today review':{en:'Today review',zh:'今日复习'},
+  'Due words':{en:'due words',zh:'待复习词'},
+  'Saved!':{en:'⭐ Saved!',zh:'⭐ 已收藏'},
+  'Already saved':{en:'✓ Already saved',zh:'✓ 已收藏'},
+  'Added to wordbook':{en:'📖 Added',zh:'📖 已加入单词本'},
+  'Wrong':{en:'Wrong',zh:'错词'},
+  'Saved':{en:'✓ 已收藏',zh:'已收藏'},
+  'Switched to English':{en:'Switched to English',zh:'已切换到英文'},
+  'Switched to Chinese':{en:'Switched to Chinese',zh:'已切换到中文'},
+  'Review word':{en:'Review {n} wrong words',zh:'错词复习 {n} 词'},
+  'Language':{en:'Language',zh:'语言'},
+  'Words seen':{en:'words seen',zh:'见过的词'},
+  'To review':{en:'to review',zh:'待复习'}
+};
+function t(k){
+  var dict=I18N[k];
+  if(!dict) return k;
+  return dict[cfg.lang===1?'zh':'en'];
+}
+function retranslateUI(){
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var k=el.getAttribute('data-i18n');
+    if(I18N[k]) el.textContent=t(k);
+  });
+}
+
+document.addEventListener('click',function(e){
+  if(spaceState.selectedWord&&!document.getElementById('depth-probe').contains(e.target)&&e.target.id!=='space-canvas'){
+    closeProbe();
+  }
+});
+
+// ===== Wordbook =====
+function addToWB(word, meaning, type){
+  if(!log.wordbook) log.wordbook=[];
+  if(!log.wordbook.find(function(w){return w[0]===word;})){
+    log.wordbook.push([word, meaning, type||'saved']);
+    saveLog();
+    if(typeof renderWB==='function') renderWB();
+    showToast(type==='wrong'?'📖 Added to wordbook':'⭐ Saved');
+  }
+}
+function removeFromWB(word){
+  log.wordbook = (log.wordbook||[]).filter(function(w){return w[0]!==word;});
+  saveLog();
+  if(typeof renderWB==='function') renderWB();
+}
+function renderWB(){
+  var list=document.getElementById('wbk-list'),
+      badge=document.getElementById('wbk-count-badge'),
+      btnCount=document.querySelector('#btn-wordbook span');
+  var items=log.wordbook||[];
+  if(items.length===0){
+    list.innerHTML='<div class="wbk-empty"><div class="ei">📖</div>No words yet<br><span style="font-size:10px;opacity:0.7">Tap a floating word to start collecting</span></div>';
+    if(badge){badge.style.display='none';}
+  }else{
+    if(badge){badge.textContent=items.length;badge.style.display='inline-block';}
+    if(btnCount){btnCount.textContent=items.length;btnCount.style.display='flex';}
+    var html='';
+    for(var i=items.length-1;i>=0;i--){
+      var item=items[i],w=item[0],m=item[1],t=item[2];
+      var safeW = w.replace(/'/g,"\\'");
+      html+='<div class="wbk-item '+t+'"><span class="dot"></span><div class="info"><div class="word">'+w+'</div><div class="mean">'+m+'</div></div><button class="x" onclick="event.stopPropagation();removeFromWB(\''+safeW+'\')">×</button></div>';
+    }
+    list.innerHTML=html;
+  }
+}
+function toggleWB(){
+  var panel=document.getElementById('wbk-panel');
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open') && typeof restoreWBPos==='function') restoreWBPos();
+  renderWB();
+}
+function closeWB(){document.getElementById('wbk-panel').classList.remove('open');}
+
+// Wordbook drag
+(function initDragWB(){
+  var panel=document.getElementById('wbk-panel'), head=document.getElementById('wbk-head');
+  var pos=null, drag=false, sx=0, sy=0, ox=0, oy=0;
+  try{pos=JSON.parse(localStorage.getItem('fw_wbk_pos')||'null');}catch(e){}
+  function applyPos(){if(!pos)return;panel.style.left=pos.x+'px';panel.style.top=pos.y+'px';}
+  function savePos(){if(!pos)return;try{localStorage.setItem('fw_wbk_pos',JSON.stringify(pos));}catch(e){}}
+  head.addEventListener('mousedown',function(e){
+    if(e.target.closest('.wbk-close'))return;
+    drag=true;panel.style.transition='none';sx=e.clientX;sy=e.clientY;
+    var r=panel.getBoundingClientRect();ox=r.left;oy=r.top;e.preventDefault();
+  });
+  window.addEventListener('mousemove',function(e){
+    if(!drag)return;
+    var dx=e.clientX-sx,dy=e.clientY-sy;
+    var nx=Math.max(8,Math.min(window.innerWidth-296,ox+dx));
+    var ny=Math.max(8,Math.min(window.innerHeight-100,oy+dy));
+    panel.style.left=nx+'px';panel.style.top=ny+'px';pos={x:nx,y:ny};
+  });
+  window.addEventListener('mouseup',function(){if(drag){drag=false;panel.style.transition='';savePos();}});
+  head.addEventListener('touchstart',function(e){
+    if(e.target.closest('.wbk-close'))return;
+    var t=e.touches[0];drag=true;panel.style.transition='none';sx=t.clientX;sy=t.clientY;
+    var r=panel.getBoundingClientRect();ox=r.left;oy=r.top;
+  },{passive:true});
+  window.addEventListener('touchmove',function(e){
+    if(!drag)return;var t=e.touches[0];
+    var dx=t.clientX-sx,dy=t.clientY-sy;
+    var nx=Math.max(8,Math.min(window.innerWidth-296,ox+dx));
+    var ny=Math.max(8,Math.min(window.innerHeight-100,oy+dy));
+    panel.style.left=nx+'px';panel.style.top=ny+'px';pos={x:nx,y:ny};
+  },{passive:true});
+  window.addEventListener('touchend',function(){if(drag){drag=false;panel.style.transition='';savePos();}});
+  window.restoreWBPos=applyPos;
+})();
+
+// ===== PWA Splash + Install =====
+(function initPWA(){
+  var btn=document.getElementById('pwa-install');
+  var splash=document.getElementById('pwa-splash');
+  var deferred=null;
+  try{
+    if(!sessionStorage.getItem('luminaria-splash-seen')){
+      splash.classList.add('show');
+      sessionStorage.setItem('luminaria-splash-seen','1');
+      setTimeout(function(){splash.classList.remove('show');},1800);
+    }
+  }catch(e){
+    splash.classList.add('show');
+    setTimeout(function(){splash.classList.remove('show');},1800);
+  }
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault();deferred=e;
+    if(btn)btn.style.display='flex';
+  });
+  if(btn){
+    btn.addEventListener('click',function(){
+      if(!deferred)return;
+      btn.style.display='none';
+      deferred.prompt();
+      deferred.userChoice.then(function(){deferred=null;});
+    });
+  }
+  if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone){
+    if(btn)btn.style.display='none';
+  }
+})();
+
+// ===== Share Card =====
+function showShareCard(){
+  updateStreak();
+  ensureToday();
+  var today=getToday(), dt=log.dailyStats[today]||{learned:0,correct:0,wrong:0};
+  var acc=dt.learned>0?Math.round(dt.correct/dt.learned*100):0;
+  var card=document.getElementById('share-card');
+  var W=560, H=720, s=2, cW=W*s, cH=H*s;
+  var zh=cfg.lang===1;
+  var title=zh?'我的学习报告':'My Learning Report';
+  var todayLabel=zh?'今日学习':'Learned Today';
+  var accLabel=zh?'正确率':'Accuracy';
+  var streakLabel=zh?'连续天数':'Streak';
+  var totalLabel=zh?'累计正确':'Total Correct';
+  var saveText=zh?'📥 保存图片':'📥 Save as Image';
+  var copyText=zh?'📋 复制文字':'📋 Copy Text';
+  var closeText=zh?'关闭':'Close';
+  var tag=zh?'★ 做自己的词汇宗师 ★':'★ Be your own lexicographer ★';
+
+  card.innerHTML='<div class="share-inner"><canvas id="share-canvas" width="'+cW+'" height="'+cH+'" style="width:'+W+'px;height:'+H+'px"></canvas>'+
+    '<div class="share-btns"><button class="share-btn-s" onclick="downloadShareImage()">'+saveText+'</button>'+
+    '<button class="share-btn-c" onclick="copyReportText()">'+copyText+'</button>'+
+    '<button class="share-btn-c" onclick="document.getElementById(\'share-card\').classList.remove(\'open\')">'+closeText+'</button></div></div>';
+  card.classList.add('open');
+
+  setTimeout(function(){
+    var cv=document.getElementById('share-canvas');
+    if(!cv)return;
+    var ctx=cv.getContext('2d');
+    ctx.scale(s,s);
+    var bg=ctx.createLinearGradient(0,0,0,H);
+    bg.addColorStop(0,'#FBF7F0');bg.addColorStop(0.4,'#FAF3F0');bg.addColorStop(1,'#F5EEEB');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+    // Decorative particles
+    for(var i=0;i<300;i++){
+      ctx.fillStyle='rgba(107,58,91,0.025)';
+      ctx.beginPath();ctx.arc(Math.random()*W,Math.random()*H,0.8+Math.random()*1.5,0,Math.PI*2);ctx.fill();
+    }
+    ctx.strokeStyle='rgba(196,30,58,0.08)';ctx.lineWidth=1.5;ctx.strokeRect(18,18,W-36,H-36);
+
+    // Title
+    ctx.fillStyle='#7A4B5E';ctx.font='600 22px Georgia,serif';ctx.textAlign='center';
+    ctx.fillText(title,W/2,56);
+    ctx.fillStyle='#8B6F8C';ctx.font='11px -apple-system,sans-serif';
+    ctx.fillText(today,W/2,76);
+    ctx.strokeStyle='#C47A8B';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(W/2-80,88);ctx.lineTo(W/2+80,88);ctx.stroke();
+
+    // Ring chart for accuracy
+    var cy=180, R=76, r=52;
+    ctx.beginPath();ctx.arc(W/2,cy,R,0,Math.PI*2);ctx.fillStyle='#FAF5F5';ctx.fill();
+    ctx.strokeStyle='rgba(196,122,139,0.15)';ctx.lineWidth=14;ctx.beginPath();ctx.arc(W/2,cy,R,0,Math.PI*2);ctx.stroke();
+    var sa=-Math.PI/2, ea=sa+Math.min(acc/100,1)*Math.PI*2;
+    ctx.strokeStyle=acc>=70?'#6BAE7A':(acc>=40?'#E8B84B':'#C47A8B');
+    ctx.lineWidth=14;ctx.lineCap='round';
+    ctx.beginPath();ctx.arc(W/2,cy,R,sa,ea);ctx.stroke();
+    ctx.lineCap='butt';
+
+    ctx.fillStyle='#7A4B5E';ctx.font='600 38px Georgia,serif';
+    ctx.fillText(acc+'%',W/2,cy+12);
+    ctx.fillStyle='#8B6F8C';ctx.font='11px -apple-system,sans-serif';
+    ctx.fillText(accLabel,W/2,cy+38);
+
+    // Stats cards
+    var sy=cy+R+50;
+    var stats=[
+      {l:todayLabel, v:dt.learned, c:'#A3C9C0'},
+      {l:streakLabel+' 🔥', v:log.streak, c:'#E8B84B'},
+      {l:totalLabel, v:log.totalCorrect, c:'#C47A8B'}
+    ];
+    var cardW=(W-60-32)/3;
+    for(var i=0;i<3;i++){
+      var x=30+i*(cardW+16);
+      ctx.fillStyle='rgba(255,255,255,0.5)';ctx.beginPath();
+      ctx.moveTo(x+8,sy);ctx.lineTo(x+cardW-8,sy);ctx.quadraticCurveTo(x+cardW,sy,x+cardW,sy+8);
+      ctx.lineTo(x+cardW,sy+70-8);ctx.quadraticCurveTo(x+cardW,sy+70,x+cardW-8,sy+70);
+      ctx.lineTo(x+8,sy+70);ctx.quadraticCurveTo(x,sy+70,x,sy+70-8);
+      ctx.lineTo(x,sy+8);ctx.quadraticCurveTo(x,sy,x+8,sy);ctx.closePath();ctx.fill();
+      ctx.fillStyle=stats[i].c;ctx.font='600 24px Georgia,serif';
+      ctx.fillText(stats[i].v,x+cardW/2,sy+38);
+      ctx.fillStyle='#8B6F8C';ctx.font='10px -apple-system,sans-serif';
+      ctx.fillText(stats[i].l,x+cardW/2,sy+58);
+    }
+
+    // 7-day bar chart
+    var by=sy+110, bw=W-60, bh=140;
+    ctx.fillStyle='rgba(255,255,255,0.5)';ctx.beginPath();
+    ctx.moveTo(30+8,by);ctx.lineTo(30+bw-8,by);ctx.quadraticCurveTo(30+bw,by,30+bw,by+8);
+    ctx.lineTo(30+bw,by+bh-8);ctx.quadraticCurveTo(30+bw,by+bh,30+bw-8,by+bh);
+    ctx.lineTo(30+8,by+bh);ctx.quadraticCurveTo(30,by+bh,30,by+bh-8);
+    ctx.lineTo(30,by+8);ctx.quadraticCurveTo(30,by,30+8,by);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#8B6F8C';ctx.font='600 11px -apple-system,sans-serif';ctx.textAlign='left';
+    ctx.fillText(zh?'近 7 日':'Last 7 Days',44,by+22);
+
+    var days=[];
+    for(var i=6;i>=0;i--){
+      var d=new Date();d.setDate(d.getDate()-i);
+      var k=d.toISOString().split('T')[0];
+      var s=log.dailyStats[k]||{learned:0,correct:0};
+      days.push({label:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()], val:s.learned||0, c:s.correct||0});
+    }
+    var maxV=Math.max.apply(null,days.map(function(x){return x.val;}).concat([1]));
+    var barW=(bw-60)/7;
+    for(var i=0;i<7;i++){
+      var x=44+i*barW, h=(days[i].val/maxV)*(bh-50);
+      var by2=by+bh-30-h;
+      var grd=ctx.createLinearGradient(0,by2,0,by+bh-30);
+      grd.addColorStop(0,days[i].c>days[i].val*0.7?'#6BAE7A':'#C47A8B');
+      grd.addColorStop(1,days[i].c>days[i].val*0.7?'#A3C9C0':'#E8D5E0');
+      ctx.fillStyle=grd;
+      ctx.beginPath();
+      ctx.moveTo(x+2,by+bh-30);ctx.lineTo(x+2,by2+4);ctx.quadraticCurveTo(x+2,by2,x+6,by2);
+      ctx.lineTo(x+barW-12,by2);ctx.quadraticCurveTo(x+barW-8,by2,x+barW-8,by2+4);
+      ctx.lineTo(x+barW-8,by+bh-30);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#8B6F8C';ctx.font='9px -apple-system,sans-serif';ctx.textAlign='center';
+      ctx.fillText(days[i].label,x+(barW-10)/2,by+bh-14);
+      if(days[i].val>0){
+        ctx.fillStyle='#7A4B5E';ctx.font='600 10px -apple-system,sans-serif';
+        ctx.fillText(days[i].val,x+(barW-10)/2,by2-4);
+      }
+    }
+
+    // Tagline
+    ctx.fillStyle='#C47A8B';ctx.font='italic 13px Georgia,serif';ctx.textAlign='center';
+    ctx.fillText(tag,W/2,H-30);
+  },100);
+}
+
+function downloadShareImage(){
+  var cv=document.getElementById('share-canvas');
+  if(!cv){showToast('Please wait...');return;}
+  var a=document.createElement('a');
+  a.download='Luminaria_'+getToday()+'.png';
+  a.href=cv.toDataURL('image/png');
+  a.click();
+  showToast('✅ Image saved!');
+}
+
+function copyReportText(){
+  ensureToday();
+  var today=getToday(), dt=log.dailyStats[today]||{learned:0,correct:0,wrong:0};
+  var acc=dt.learned>0?Math.round(dt.correct/dt.learned*100):0;
+  var zh=cfg.lang===1;
+  var text=zh?
+    ('✦ 浮光词集 · 学习报告 ✦\n日期: '+today+'\n今日学习: '+dt.learned+'\n正确率: '+acc+'%\n连续: '+log.streak+' 天\n累计正确: '+log.totalCorrect+'\n已掌握: '+log.mastered.length+' 词\n最佳连续: '+log.bestStreak+' 天\n\n★ 做自己的词汇宗师 ★'):
+    ('✦ Luminaria · My Report ✦\nDate: '+today+'\nToday: '+dt.learned+'\nAccuracy: '+acc+'%\nStreak: '+log.streak+' days\nTotal Correct: '+log.totalCorrect+'\nMastered: '+log.mastered.length+'\nBest Streak: '+log.bestStreak+'\n\n★ Be your own lexicographer ★');
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(function(){showToast(zh?'📋 已复制':'📋 Copied!');}).catch(function(){showToast('Copy failed');});
+  }else{
+    var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');showToast(zh?'📋 已复制':'📋 Copied!');}catch(e){showToast('Copy failed');}
+    document.body.removeChild(ta);
+  }
+}
+
+// ===== Float Mode Color Guide (bottom-right) =====
+function buildFloatGuide(){
+  var fg=document.getElementById('float-guide');
+  if(!fg)return;
+  var zh=cfg.lang===1;
+  var families=[
+    {en:'Ephemera',zh:'转瞬即逝',color:'#B894A8'},
+    {en:'Fortitude',zh:'坚韧',color:'#B8954A'},
+    {en:'Radiance',zh:'欢愉',color:'#DC8A6E'},
+    {en:'Stillness',zh:'宁静',color:'#7DAE96'},
+    {en:'Contemplation',zh:'忧郁',color:'#6B85A0'},
+    {en:'Discernment',zh:'智慧',color:'#6E5494'},
+    {en:'Ardor',zh:'炽烈',color:'#A8483A'},
+    {en:'Unease',zh:'萦惑',color:'#988AA8'}
+  ];
+  var html='<div class="fg-title">'+(zh?'🎨 色彩指南':'🎨 Color Guide')+'</div>'+
+    '<div class="fg-grid">';
+  for(var i=0;i<families.length;i++){
+    var f=families[i];
+    html+='<div class="fg-item"><span class="fg-swatch" style="background:'+f.color+'"></span>'+f[zh?'zh':'en']+'</div>';
+  }
+  html+='</div>';
+  fg.innerHTML=html;
+}
+
+// ===== Reset Bank =====
+function resetBank(){
+  var bk=cfg.wb, all=WB[bk]||[];
+  if(!all.length){showToast('Empty bank');return;}
+  var msg=cfg.lang===1?
+    ('确定要重置「'+bk+'」吗？\n'+all.length+' 个词将重新出现，\n已掌握记录将清空。\n（单词本不受影响）'):
+    ('Reset "'+bk+'"?\n'+all.length+' words will reappear,\nprogress will be cleared.\n(Wordbook preserved)');
+  if(!confirm(msg))return;
+  var cards=log.fsrsCards||{};
+  for(var i=0;i<all.length;i++){
+    var w=all[i][0];
+    if(cards[w])delete cards[w];
+  }
+  log.wordSeen[bk]=[];
+  saveLog();
+  wordCycle=[];cycleIdx=0;
+  if(currentView==='float'){
+    activeWords.forEach(function(el){if(el&&el.parentNode)el.remove();});
+    activeWords=[];
+  }
+  updateProgress();refreshStats();
+  showToast(cfg.lang===1?('已重置 '+bk):(bk+' reset'));
+}
+
+// ===== Initialization =====
+function safeAddListener(id, ev, fn) {
+  var el = document.getElementById(id);
+  if (el) { el.addEventListener(ev, fn); return true; }
+  else { console.warn('[init] Missing element:', id); return false; }
+}
+
+function init(){
+  console.log('[init] Starting...');
+  loadWordBank().then(function(){
+    console.log('[init] WB loaded, banks:', Object.keys(WB).length);
+    if(!cfg.wb) cfg.wb = Object.keys(WB)[0];
+    return loadHaloData();
+  }).then(function(){
+    console.log('[init] Halo loaded, entries:', Object.keys(HALO).length);
+    try { buildSettings(); } catch(e) { console.error('[init] buildSettings error:', e.message); }
+    try { saveCfg(); } catch(e) {}
+    try { refreshStats(); } catch(e) { console.error('[init] refreshStats:', e.message); }
+    try { updateProgress(); } catch(e) { console.error('[init] updateProgress:', e.message); }
+    try { retranslateUI(); } catch(e) {}
+    // Build meaning cache BEFORE switchView so quiz is ready instantly
+    _mqCache = [];
+    for(var _bk in WB){var _it=WB[_bk];for(var _j=0;_j<_it.length;_j++){_mqCache.push(_it[_j][1]);}}
+    console.log('[init] Meaning cache:', _mqCache.length, 'entries');
+    try { switchView('float'); console.log('[init] switchView(float) called'); } catch(e) { console.error('[init] switchView:', e.message); }
+    try { initSpaceParticles(); } catch(e) {}
+    console.log('[init] Init complete');
+  }).catch(function(err){
+    console.error('[init] Data load failed:', err.message);
+  });
+
+  // Event listeners with safe checks
+  safeAddListener('btn-settings','click',function(){
+    var p=document.getElementById('settings-panel'),o=document.getElementById('settings-overlay');
+    p.classList.toggle('open');o.classList.toggle('open');
+    if(p.classList.contains('open')) try{}catch(e){}
+  });
+  safeAddListener('settings-overlay','click',function(){
+    document.getElementById('settings-panel').classList.remove('open');
+    this.classList.remove('open');
+  });
+  safeAddListener('btn-lang','click',function(){
+    cfg.lang=cfg.lang===0?1:0;saveCfg();
+    // Instant text-only updates (no layout shift)
+    document.getElementById('brand-title').textContent=cfg.lang===1?'浮光词集':'Luminaria';
+    document.getElementById('wbk-title-text').textContent=cfg.lang===1?'我的单词':'My Words';
+    retranslateUI();
+    showToast(cfg.lang===1?'语言已切换为中文':'Switched to English');
+    // Batch ALL heavy rebuilds into one frame to prevent layout thrashing
+    requestAnimationFrame(function(){
+      try{buildSettings();}catch(e){}
+      try{renderWB();}catch(e){}
+      try{refreshStats();}catch(e){}
+      try{updateProgress();}catch(e){}
+      try{rebuildSpaceLegend();}catch(e){}
+      if(currentView!=='space'){try{buildFloatGuide();}catch(e){}}
+      try{updateSpaceOverlayLang();}catch(e){}
+      // Force space re-render if in space mode (updates constellation labels)
+      if(currentView==='space'){
+        renderSpaceView._deferNext=true;
+        try{renderSpaceView();}catch(e){}
+      }
+    });
+  });
+  // safeAddListener('btn-share','click',function(){showShareCard();});
+  safeAddListener('btn-wordbook','click',function(){toggleWB();});
+  safeAddListener('wbk-close','click',function(e){e.stopPropagation();closeWB();});
+  safeAddListener('pg-reset','click',function(){resetBank();});
+  safeAddListener('quiz-close','click',closeQuiz);
+  safeAddListener('quiz-options','click',handleQuizAnswer);
+  safeAddListener('quiz-overlay','click',function(e){if(e.target===this)closeQuiz();});
+  safeAddListener('share-card','click',function(e){if(e.target===this)e.currentTarget.classList.remove('open');});
+  safeAddListener('sc-review','click',function(){
+    var due=getDueFSRSWords();
+    if(due.length===0){showToast(cfg.lang===1?'暂无待复习词':'No words due for review');return;}
+    if(currentView!=='float') switchView('float');
+    for(var i=0;i<activeWords.length;i++){if(activeWords[i]&&activeWords[i].parentNode)activeWords[i].remove();}
+    activeWords=[];quizSession={words:due,index:0};quizVersion=1;
+    showToast((cfg.lang===1?'开始复习 ':'Review ')+due.length+(cfg.lang===1?' 词':' words'));
+    nextQuizWord();
+  });
+  safeAddListener('sc-wrong','click',function(){
+    var wp=log.wrongWords.filter(function(w){return log.mastered.indexOf(w[0])<0;});
+    if(wp.length===0){showToast(cfg.lang===1?'没有错词了':'No wrong words');return;}
+    if(currentView!=='float') switchView('float');
+    for(var i=0;i<activeWords.length;i++){if(activeWords[i]&&activeWords[i].parentNode)activeWords[i].remove();}
+    activeWords=[];quizSession={words:wp,index:0};quizVersion=1;
+    showToast(cfg.lang===1?('错词复习 '+wp.length+' 词'):('Review '+wp.length+' wrong words'));
+    nextQuizWord();
+  });
+  var scEl=document.getElementById('sc-wrong');if(scEl)scEl.style.cursor='pointer';
+
+  // View toggle
+  document.querySelectorAll('.view-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){switchView(this.dataset.view);});
+  });
+
+  // Click outside wordbook closes it
+  document.addEventListener('mousedown',function(e){
+    var p=document.getElementById('wbk-panel'), b=document.getElementById('btn-wordbook');
+    if(!p||!p.classList.contains('open'))return;
+    if(p.contains(e.target)||(b&&b.contains(e.target)))return;
+    p.classList.remove('open');
+  });
+
+  // Settings changes
+  safeAddListener('sel-bank','change',function(){cfg.wb=this.value;saveCfg();wordCycle=[];cycleIdx=0;updateProgress();refreshStats();showToast(cfg.lang===1?('词库：'+cfg.wb):('Bank: '+cfg.wb));if(currentView==='space'){spaceState.offsetX=0;spaceState.offsetY=0;spaceState.scale=1;renderSpaceView();}});
+  safeAddListener('sel-font','change',function(){cfg.ff=parseInt(this.value);saveCfg();});
+  safeAddListener('sel-fontsize','change',function(){cfg.fs=parseInt(this.value);saveCfg();});
+  safeAddListener('speed-slider','input',function(){cfg.sp=parseInt(this.value);document.getElementById('speed-val').textContent=cfg.sp;saveCfg();startSpawner();});
+  safeAddListener('density-slider','input',function(){cfg.dn=parseInt(this.value);document.getElementById('density-val').textContent=cfg.dn;saveCfg();});
+  safeAddListener('dwell-slider','input',function(){cfg.dw=parseInt(this.value);document.getElementById('dwell-val').textContent=cfg.dw+'s';saveCfg();});
+
+  var bt=document.getElementById('brand-title');
+  if(bt) bt.textContent=cfg.lang===1?'浮光词集':'Luminaria';
+  var wt=document.getElementById('wbk-title-text');
+  if(wt) wt.textContent=cfg.lang===1?'我的单词':'My Words';
+
+  // Render wordbook
+  try{renderWB();}catch(e){console.error('[init] renderWB:',e.message);}
+
+  // Keyboard
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){
+      try{closeQuiz();}catch(x){}
+      try{closeProbe();}catch(x){}
+      var sp=document.getElementById('settings-panel');if(sp)sp.classList.remove('open');
+      var so=document.getElementById('settings-overlay');if(so)so.classList.remove('open');
+      var wp=document.getElementById('wbk-panel');if(wp)wp.classList.remove('open');
+      var sh=document.getElementById('share-card');if(sh)sh.classList.remove('open');
+    }
+    if(e.key==='s'&&!e.target.closest('input,select,textarea,button')){
+      var p=document.getElementById('settings-panel'),o=document.getElementById('settings-overlay');
+      if(!p)return;
+      p.classList.toggle('open');o.classList.toggle('open');
+      if(p.classList.contains('open')) try{}catch(x){}
+    }
+  });
+
+  // Periodic refresh
+  setInterval(refreshStats,30000);
+}
+
+function nextQuizWord(){
+  var zh=cfg.lang===1;
+  console.log('[nextQuizWord] quizSession:', quizSession ? 'exists index='+quizSession.index+'/'+quizSession.words.length : 'null', 'words:', quizSession ? JSON.stringify(quizSession.words.map(function(x){return x[0];})) : 'none');
+  if(!quizSession||quizSession.index>=quizSession.words.length){
+    console.log('[nextQuizWord] Session complete or null, resetting');
+    quizSession=null;quizVersion=0;
+    activeWords.forEach(function(el){if(el&&el.parentNode)el.remove();});
+    activeWords=[];wordCycle=[];cycleIdx=0;startSpawner();
+    if(currentView==='float') document.getElementById('float-container').style.pointerEvents='';
+    showToast(zh?'复习完成！':'Review complete!');
+    return;
+  }
+  quizVersion++;
+  var entry=quizSession.words[quizSession.index++];
+  console.log('[nextQuizWord] Advancing to word:', entry[0], 'new index:', quizSession.index, 'remaining:', quizSession.words.length - quizSession.index);
+  var el=document.createElement('div');el.style.display='none';el.dataset.w=entry[0];el.dataset.m=entry[1];
+  document.body.appendChild(el);
+  document.getElementById('quiz-overlay').classList.add('active');
+  startQuiz(el);
+}
+
+// ===== Canvas Particles (background) =====
+(function(){
+  var cv=document.getElementById('canvas-particles'),ctx=cv.getContext('2d'),ps=[],PC=55;
+  function resize(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
+  window.addEventListener('resize',resize);resize();
+  var wc=[{c:'rgba(255,245,220,',g:'rgba(255,220,180,'},{c:'rgba(255,235,210,',g:'rgba(255,210,160,'},{c:'rgba(248,210,185,',g:'rgba(245,185,150,'},{c:'rgba(255,250,240,',g:'rgba(255,240,215,'}];
+  for(var i=0;i<PC;i++){var cc=wc[Math.floor(Math.random()*wc.length)],r=1.5+Math.random()*3.5;ps.push({x:Math.random()*cv.width,y:Math.random()*cv.height,r:r,gr:r*2.5+Math.random()*4,a:0.3+Math.random()*0.5,color:cc.c,glow:cc.g,vx:(Math.random()-0.5)*0.8,vy:-0.2-Math.random()*0.7,sp:0.5+Math.random(),pulse:Math.random()*Math.PI*2,psp:0.003+Math.random()*0.012});}
+  function render(){
+    if(cv.style.display==='none'){requestAnimationFrame(render);return;}
+    ctx.clearRect(0,0,cv.width,cv.height);ctx.globalCompositeOperation='lighter';
+    for(var i=0;i<ps.length;i++){var p=ps[i];p.y+=p.vy*p.sp;p.x+=p.vx*0.4;p.pulse+=p.psp;
+      var a=p.a*(0.65+0.35*Math.sin(p.pulse));
+      var gg=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.gr);gg.addColorStop(0,p.glow+(a*0.7)+')');gg.addColorStop(0.4,p.glow+(a*0.3)+')');gg.addColorStop(1,p.glow+'0)');
+      ctx.beginPath();ctx.fillStyle=gg;ctx.arc(p.x,p.y,p.gr,0,Math.PI*2);ctx.fill();
+      var cg=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);cg.addColorStop(0,p.color+(a*1.5)+')');cg.addColorStop(0.5,p.color+(a*1.2)+')');cg.addColorStop(1,p.color+(a*0.1)+')');
+      ctx.beginPath();ctx.fillStyle=cg;ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+      if(p.y<-30){p.y=cv.height+30;p.x=Math.random()*cv.width;}if(p.x<-30)p.x=cv.width+30;if(p.x>cv.width+30)p.x=-30;
+    }
+    ctx.globalCompositeOperation='source-over';requestAnimationFrame(render);
+  }
+  render();
+})();
+
+// ===== Boot =====
+initSpeech();
+init();
+</script>
+</body>
+</html>

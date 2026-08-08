@@ -1,0 +1,114 @@
+╔══════════════════════════════════════════════════════════════╗
+║    浮光词集 (Luminaria) — End User License Agreement        ║
+║    最终用户许可协议                                          ║
+╚══════════════════════════════════════════════════════════════╝
+
+© 2026 袁铭 (Yuan Ming). All rights reserved.
+
+本软件受《中华人民共和国著作权法》及国际著作权条约保护。
+安装或使用本应用即表示您同意以下条款。
+
+This Software is protected by the Copyright Law of the People's
+Republic of China and international copyright treaties. By
+installing or using this application, you agree to the terms below.
+
+────────────────────────────────────────────────────────────
+1. Grant of License / 授权范围
+────────────────────────────────────────────────────────────
+
+You are granted a personal, non-commercial, non-transferable
+license. Subject to this Agreement, you may:
+
+  ✅ Install and use the application on devices you personally
+     own or control.
+  ✅ Make one backup copy to your personal cloud storage.
+
+您获得的是个人非商业使用授权，在遵守本协议的前提下，您可以：
+
+  ✅ 在您个人拥有或控制的设备上安装和使用本应用。
+  ✅ 将本应用复制一份至您的个人云存储作为备份。
+
+────────────────────────────────────────────────────────────
+Without prior written permission from the copyright holder,
+you may NOT:
+
+  ❌ Resell, rent, lease, sublicense, or distribute the
+     application in any form.
+  ❌ Reverse-engineer, decompile, disassemble, or extract
+     source code from the application.
+  ❌ Remove, modify, or obscure any copyright notice within
+     the application.
+  ❌ Use the application for public demonstrations, commercial
+     training, or commercial operations.
+  ❌ Create derivative works based on the application.
+
+未经版权人书面许可，您不得：
+
+  ❌ 将本应用以任何形式转售、出租、出借、再许可或分发。
+  ❌ 对本应用进行逆向工程、反编译、反汇编或提取源代码。
+  ❌ 移除、修改或遮盖本应用中的任何版权声明。
+  ❌ 将本应用用于公开演示、商业培训或商业运营。
+  ❌ 基于本应用制作衍生作品。
+
+────────────────────────────────────────────────────────────
+2. Intellectual Property / 知识产权
+────────────────────────────────────────────────────────────
+
+All intellectual property rights in and to the application —
+including but not limited to source code, user interface design,
+visual assets (icons, color palettes, CSS animations, particle
+effects), FSRS algorithm implementation and configuration, and
+branding "浮光词集 / Luminaria" — are and shall remain the
+exclusive property of 袁铭 (Yuan Ming).
+
+This Agreement does not transfer any intellectual property
+rights to you.
+
+本应用的全部知识产权，包括但不限于源代码、用户界面设计、
+视觉资产（图标、配色方案、CSS 动画、粒子效果）、FSRS 算法
+实现配置及品牌名称"浮光词集 / Luminaria"，均归版权人
+袁铭 (Yuan Ming) 所有。
+
+本协议不向您转让任何知识产权。
+
+────────────────────────────────────────────────────────────
+3. Disclaimer of Warranty / 免责声明
+────────────────────────────────────────────────────────────
+
+THE APPLICATION IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+AND NON-INFRINGEMENT.
+
+The copyright holder shall not be liable for any data loss or
+other damages arising from the use of the application.
+
+本应用按"现状"提供，不提供任何明示或默示的担保，包括但不
+限于适销性、特定用途适用性及不侵权的担保。
+
+版权人不对因使用本应用导致的任何数据丢失或其他损失承担责任。
+
+────────────────────────────────────────────────────────────
+4. Termination / 终止
+────────────────────────────────────────────────────────────
+
+This license is effective until terminated. It will terminate
+automatically if you fail to comply with any provision of this
+Agreement. Upon termination, you must destroy all copies of
+the application in your possession.
+
+如您违反本协议任何条款，本授权自动终止。终止后您须销毁
+所有持有本应用的副本。
+
+────────────────────────────────────────────────────────────
+5. Governing Law / 适用法律
+────────────────────────────────────────────────────────────
+
+This Agreement shall be governed by and construed in accordance
+with the laws of the People's Republic of China.
+
+本协议受中华人民共和国法律管辖。
+
+────────────────────────────────────────────────────────────
+Version 1.1  |  Effective Date: July 2026
+────────────────────────────────────────────────────────────

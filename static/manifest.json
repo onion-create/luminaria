@@ -1,0 +1,29 @@
+{
+  "name": "Luminaria · 浮光词集",
+  "short_name": "Luminaria",
+  "description": "A serene floating vocabulary app with FSRS adaptive memory algorithm.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FBF7F0",
+  "theme_color": "#7A4B5E",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "categories": ["education", "books", "productivity"],
+  "icons": [
+    { "src": "static/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "static/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "static/icons/icon-master-1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" },
+    { "src": "static/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Wordbook",
+      "short_name": "Words",
+      "description": "Open my saved wordbook",
+      "url": "./#wbk",
+      "icons": [{ "src": "static/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

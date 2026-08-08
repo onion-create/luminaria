@@ -1,0 +1,18 @@
+{
+  "name": "luminaria-vocab",
+  "version": "2.0.0",
+  "description": "A serene spatial vocabulary learning PWA — AI emotional geography × FSRS × Dual-core architecture",
+  "private": true,
+  "homepage": "https://onion-create.github.io/luminaria-vocab",
+  "author": "Yuan Ming",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "test": "node tests/fsrs.test.js",
+    "lint": "echo 'Linting ready for manual use'",
+    "dev": "open source/app.html"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

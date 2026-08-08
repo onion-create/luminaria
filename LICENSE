@@ -1,0 +1,146 @@
+================================================================================
+  浮光词集 (Luminaria) — Adaptive Vocabulary Learning PWA
+  SOURCE-AVAILABLE PROPRIETARY LICENSE
+================================================================================
+
+Copyright © 2026 袁铭 (Yuan Ming). All rights reserved.
+
+
+1. DEFINITIONS
+
+   "Software" means the source code, compiled code, visual assets, design
+   systems, vocabulary data banks, FSRS algorithm configuration, icons,
+   CSS motion-design families, color palette definitions, user interface
+   layouts, and all associated documentation files contained in this
+   repository.
+
+   "Author" means 袁铭 (Yuan Ming), the sole copyright holder of the
+   Software.
+
+   "Personal Use" means installation and use of the Software on devices
+   you personally own or control, for your own individual, non-commercial
+   vocabulary learning purposes.
+
+
+2. GRANT OF LICENSE — WHAT YOU CAN DO
+
+   The Author grants you a worldwide, royalty-free, non-exclusive,
+   non-transferable, revocable license to:
+
+   (a) View and inspect the source code for educational and evaluation
+       purposes;
+   (b) Install and run the Software on your personal devices for
+       Personal Use;
+   (c) Create one (1) backup copy for personal archival purposes;
+   (d) Share screenshots or video recordings of the Software in operation
+       for non-commercial purposes (e.g., social media, reviews, academic
+       discussion), provided you do not misrepresent authorship.
+
+
+3. RESTRICTIONS — WHAT YOU CANNOT DO
+
+   Without prior written permission from the Author, you may NOT:
+
+   (a) Redistribute, sublicense, sell, rent, lease, or otherwise transfer
+       the Software or any portion of it to any third party;
+   (b) Use the Software, in whole or in part, for any commercial purpose,
+       including but not limited to: offering it as a paid service,
+       embedding it in a commercial product, charging users for access,
+       or using it to generate revenue in any form;
+   (c) Modify, adapt, translate, or create derivative works based on the
+       Software;
+   (d) Remove, alter, or obscure any copyright, trademark, or attribution
+       notices contained in the Software;
+   (e) Extract, repackage, or redistribute the vocabulary data banks
+       (banks/*.json) independently from the Software;
+   (f) Replicate the Software's visual identity, color palette system,
+       CSS motion-design families, or user interface design as part of
+       any other product or service;
+   (g) Use the name "浮光词集", "Luminaria", or any associated branding
+       elements in connection with any other product or service.
+
+
+4. INTELLECTUAL PROPERTY
+
+   All intellectual property rights in and to the Software — including
+   but not limited to source code, user interface design, visual assets,
+   CSS animation systems, color palette definitions, FSRS algorithm
+   integration and configuration, vocabulary data bank curation and
+   structure, and branding — are and shall remain the exclusive property
+   of 袁铭 (Yuan Ming).
+
+   This License does not convey any ownership interest in the Software.
+   Nothing in this License shall be construed as a transfer, assignment,
+   or waiver of any intellectual property rights held by the Author.
+
+
+5. THIRD-PARTY COMPONENTS
+
+   The FSRS (Free Spaced Repetition Scheduler) algorithm implemented in
+   this Software is based on the open-source fsrs.js library, which is
+   separately licensed under its own terms. This License covers only the
+   Author's original contributions to this Software — including the FSRS
+   configuration, integration layer, and all surrounding application
+   logic — and does not supersede or modify the license terms of any
+   incorporated third-party components.
+
+   Google Fonts (Playfair Display) are served via the Google Fonts API
+   under their respective open-source licenses.
+
+
+6. DISCLAIMER OF WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND
+   NON-INFRINGEMENT. THE AUTHOR DOES NOT WARRANT THAT THE SOFTWARE
+   WILL MEET YOUR REQUIREMENTS, OPERATE WITHOUT INTERRUPTION, OR BE
+   ERROR-FREE.
+
+   THE ENTIRE RISK AS TO THE QUALITY, ACCURACY, AND PERFORMANCE OF THE
+   SOFTWARE IS WITH YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME
+   THE COST OF ALL NECESSARY SERVICING, REPAIR, OR CORRECTION.
+
+
+7. LIMITATION OF LIABILITY
+
+   TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL
+   THE AUTHOR BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+   OR CONSEQUENTIAL DAMAGES (INCLUDING BUT NOT LIMITED TO LOSS OF DATA,
+   LOSS OF PROFITS, BUSINESS INTERRUPTION, OR COST OF PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES) ARISING OUT OF OR IN CONNECTION WITH
+   THE USE OR INABILITY TO USE THE SOFTWARE, EVEN IF THE AUTHOR HAS BEEN
+   ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+
+8. TERMINATION
+
+   This License is effective until terminated. It will terminate
+   automatically without notice from the Author if you fail to comply
+   with any provision of this License. Upon termination, you must
+   destroy all copies of the Software in your possession or control,
+   including all backup and archival copies.
+
+
+9. GOVERNING LAW
+
+   This License shall be governed by and construed in accordance with
+   the laws of the People's Republic of China. Any disputes arising
+   from or in connection with this License shall be subject to the
+   exclusive jurisdiction of the courts of Suzhou, Jiangsu Province,
+   People's Republic of China.
+
+
+10. CONTACT
+
+    For commercial licensing inquiries, partnership opportunities, or
+    written permission requests, contact the Author at:
+
+    袁铭 (Yuan Ming)
+    GitHub: https://github.com/onion-create
+    Project: https://onion-create.github.io/luminaria-vocab
+
+
+================================================================================
+  VERSION: 1.0  |  EFFECTIVE DATE: July 2026
+================================================================================
