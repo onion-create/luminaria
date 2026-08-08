@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://onion-create.github.io/luminaria-vocab/"><strong>🌐 Live Demo</strong></a> &nbsp;&nbsp;
+  <a href="https://onion-create.github.io/luminaria/"><strong>🌐 Live Demo</strong></a> &nbsp;&nbsp;
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-proprietary-red.svg" alt="License" /></a>
   <img src="https://img.shields.io/badge/words-34,479-blue.svg" alt="Words" />
   <img src="https://img.shields.io/badge/halo_labels-10,081-purple.svg" alt="Halo Labels" />
