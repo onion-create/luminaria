@@ -45,13 +45,13 @@ The rendering engine uses innerHTML batch insertion for instant loading, event d
 
 ## Screenshots
 
-### Space Mode — Vocabulary Cosmos
-Every word becomes a star, grouped into 8 emotional constellations. Real-time FSRS progress tracking per constellation. Click any word to learn. Bilingual UI (shown in 中文 above).
+### Float Mode — Ambient Learning
+Words drift across the screen with emotion-matched animations. Wes Anderson-inspired palette. Click to quiz, save to wordbook, or review.
 
 ![Space Mode — Vocabulary Cosmos](static/screenshots/space-mode.png)
 
-### Float Mode — Ambient Learning
-Words drift across the screen with emotion-matched animations. Wes Anderson-inspired palette. Click to quiz, save to wordbook, or review.
+### Space Mode — Vocabulary Cosmos
+Every word becomes a star, grouped into 8 emotional constellations. Real-time FSRS progress tracking per constellation. Click any word to learn. Bilingual UI (shown in 中文 above).
 
 ![Float Mode — Ambient Learning](static/screenshots/float-mode.png)
 
