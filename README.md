@@ -6,11 +6,11 @@
 
 <p align="center">
   <strong>Vocabulary learning as an aesthetic experience.</strong><br />
-  <em>10,000 AI-labeled words · 8 exam banks · FSRS · Dual-Mode Spatial Memory · Offline PWA</em>
+  <em>10,081 AI-labeled words · 8 exam banks · FSRS · Dual-Mode Spatial Memory · Offline PWA</em>
 </p>
 
 <p align="center">
-  <a href="https://onion-create.github.io/luminaria/"><strong>🌐 Live Demo</strong></a> &nbsp;&nbsp;
+  <a href="https://onion-create.github.io/luminaria-vocab/"><strong>🌐 Live Demo</strong></a> &nbsp;&nbsp;
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-proprietary-red.svg" alt="License" /></a>
   <img src="https://img.shields.io/badge/words-34,479-blue.svg" alt="Words" />
   <img src="https://img.shields.io/badge/halo_labels-10,081-purple.svg" alt="Halo Labels" />
@@ -25,9 +25,9 @@ Most vocabulary apps force an impossible choice: **scientific rigor** wrapped in
 
 Luminaria starts from a different premise: **beauty is a retention mechanism, not decoration.**
 
-Words drift across the screen in deliberate, meditative rhythm. The color palette borrows from Wes Anderson's *The French Dispatch*. The spaced-repetition engine uses FSRS — the same algorithm that outperforms Anki's SM-2 in published research. Every pixel was designed with one question: *"will this make someone stay five more minutes?"*
+Words drift across the screen in deliberate, meditative rhythm. The color palette borrows from Wes Anderson's *The French Dispatch*. The spaced-repetition engine implements the FSRS scheduling formula (R = 0.9^(t/S)) — the same family of algorithms shown to outperform Anki's SM-2 in published research. Every pixel was designed with one question: *"will this make someone stay five more minutes?"*
 
-**Built solo, end-to-end, without a design team or engineering team.** Designed in the mind, built through AI-assisted development tools (Codex CLI, Claude Code, WorkBuddy), deployed to GitHub Pages. From idea to production — one person, zero frameworks, 100% original.
+**Built solo, end-to-end, without a design team or engineering team.** Designed in the mind, built through AI-assisted development tools (WorkBuddy, Claude Code), deployed to GitHub Pages. From idea to production — one person, zero frameworks, 100% original.
 
 ---
 
@@ -37,7 +37,7 @@ Words drift across the screen in deliberate, meditative rhythm. The color palett
 Words drift across the screen in 10 distinct animation families — each dynamically assigned based on the word's AI-inferred emotional profile. Pendulum, bubble rise, dandelion, firefly, galaxy orbit — every motion is a designed experience, not a random effect. Click any word to quiz, review, and save. No gamification tricks. No streaks that punish. Just a space you want to return to.
 
 ### 🌌 Space Mode — Spatial Memory Engine
-Every word becomes a star. **Ten thousand stars** organized into 8 constellations — each representing an emotional family: Discernment, Fortitude, Radiance, Stillness, Contemplation, Ardor, Unease, Ephemera. Hover reveals metadata. Click initiates learning. Each constellation tracks progress independently. Words of the same emotional profile cluster together — you learn in semantic groups, not alphabetized lists.
+Every word becomes a star. **Over ten thousand stars** organized into 8 constellations — each representing an emotional family: Discernment, Fortitude, Radiance, Stillness, Contemplation, Ardor, Unease, Ephemera. Hover reveals metadata. Click initiates learning. Each constellation tracks progress independently. Words of the same emotional profile cluster together — you learn in semantic groups, not alphabetized lists.
 
 The rendering engine uses innerHTML batch insertion for instant loading, event delegation (3 global listeners for 2,000+ interactive elements), and GPU-composited transforms. It's fast enough to feel native.
 
@@ -45,13 +45,13 @@ The rendering engine uses innerHTML batch insertion for instant loading, event d
 
 ## Screenshots
 
-### Float Mode — Ambient Learning
-Words drift across the screen with emotion-matched animations. Wes Anderson-inspired palette. Click to quiz, save to wordbook, or review.
+### Space Mode — Vocabulary Cosmos
+Every word becomes a star, grouped into 8 emotional constellations. Real-time FSRS progress tracking per constellation. Click any word to learn. Bilingual UI (shown in 中文 above).
 
 ![Space Mode — Vocabulary Cosmos](static/screenshots/space-mode.png)
 
-### Space Mode — Vocabulary Cosmos
-Every word becomes a star, grouped into 8 emotional constellations. Real-time FSRS progress tracking per constellation. Click any word to learn. Bilingual UI (shown in 中文 above).
+### Float Mode — Ambient Learning
+Words drift across the screen with emotion-matched animations. Wes Anderson-inspired palette. Click to quiz, save to wordbook, or review.
 
 ![Float Mode — Ambient Learning](static/screenshots/float-mode.png)
 
@@ -61,7 +61,7 @@ Every word becomes a star, grouped into 8 emotional constellations. Real-time FS
 
 | Category | What You Get |
 |----------|--------------|
-| 🧠 **Algorithm** | Custom FSRS implementation (stability × difficulty × retention scheduling). 25 unit tests. Outperforms SM-2. |
+| 🧠 **Algorithm** | Custom FSRS implementation (R = 0.9^(t/S) retention formula with stability × difficulty state). 25 unit tests. |
 | 🎨 **Design System** | French Dispatch-inspired palette. 10 CSS motion-design families. Glassmorphism UI. 22 background gradients. Fixed-width bilingual layout — zero layout shift on language toggle. |
 | 📚 **Content** | 34,479 words across 8 exam banks: CET-4, CET-6, 考研, TOEFL, IELTS, GRE, SAT, 商务英语. Bilingual definitions. Word bank selector with counts. |
 | 🤖 **AI Halo** | 10,081 words labeled with VAD (Valence-Arousal-Dominance) emotion coordinates by DeepSeek API. Each word gets: valence, arousal, dominance, 3 emotional traits, emotion family, color, and animation preset. |
@@ -81,7 +81,7 @@ Every word becomes a star, grouped into 8 emotional constellations. Real-time FS
 
 *This project is a case study in AI-native product development.*
 
-Luminaria was conceived, designed, and built by one person — **袁铭 (Yuan Ming)** — with no formal software engineering background. The development stack: **Claude Code + Codex CLI + WorkBuddy** as AI engineering partners, **DeepSeek API** for the Halo emotion-labeling pipeline, and **GitHub Pages + vanilla JS** for zero-infrastructure deployment.
+Luminaria was conceived, designed, and built by one person — **袁铭 (Yuan Ming)** — with no formal software engineering background. The development stack: **WorkBuddy + Claude Code** as AI engineering partners, **DeepSeek API** for the Halo emotion-labeling pipeline, and **GitHub Pages + vanilla JS** for zero-infrastructure deployment.
 
 The methodology: design-first development. Every feature started as a product decision ("words should feel like they belong to an emotion, not a list"), was prototyped through AI pair-programming, tested manually, and shipped. No sprints. No Jira. Just a clear vision and tools that amplified execution speed.
 
@@ -145,7 +145,7 @@ npm run dev       # Open source/app.html directly (no data inlining)
 
 ## Attribution
 
-- **FSRS Algorithm** — Based on [open-spaced-repetition/fsrs.js](https://github.com/open-spaced-repetition/fsrs.js). The custom implementation extends FSRS v5 with depth scoring, difficulty tracking, and per-word retention modeling. All surrounding application logic, visual identity, and curated vocabulary data are original work.
+- **FSRS Algorithm** — Implements the FSRS retention formula (R = 0.9^(t/S), based on [open-spaced-repetition/fsrs.js](https://github.com/open-spaced-repetition/fsrs.js)) with a simplified stability × difficulty state machine, extended with depth scoring and difficulty tracking. This is a lightweight custom implementation, not the full parameterized FSRS (no weight-vector optimization). All surrounding application logic, visual identity, and curated vocabulary data are original work.
 - **Typography** — Playfair Display served via Google Fonts (OFL license).
 - **AI Halo Data** — VAD emotion annotations generated using the DeepSeek API.
 
