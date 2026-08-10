@@ -79,15 +79,7 @@ Words drift across the screen with emotion-matched animations. Wes Anderson-insp
 
 ## The AI-Assisted Development Story
 
-*This project is a case study in AI-native product development.*
-
-Luminaria was conceived, designed, and built by one person — **袁铭 (Yuan Ming)** — with no formal software engineering background. The development stack: **WorkBuddy + Claude Code** as AI engineering partners, **DeepSeek API** for the Halo emotion-labeling pipeline, and **GitHub Pages + vanilla JS** for zero-infrastructure deployment.
-
-The methodology: design-first development. Every feature started as a product decision ("words should feel like they belong to an emotion, not a list"), was prototyped through AI pair-programming, tested manually, and shipped. No sprints. No Jira. Just a clear vision and tools that amplified execution speed.
-
-The result: a production-grade PWA with 34,000+ words, FSRS engine, dual-mode spatial memory architecture, and a design system that could pass for a funded startup's product — built by a solo creator in weeks.
-
-**If you're evaluating this project as a portfolio piece or hiring signal:** it demonstrates product vision, design taste, user empathy, and the ability to ship a complete product end-to-end — the exact skill set that AI-augmented teams need in 2026.
+Luminaria was conceived, designed, and built by one person with no formal software engineering background. The development stack: **WorkBuddy + Claude Code** as AI engineering partners, **DeepSeek API** for the Halo emotion-labeling pipeline, and **GitHub Pages + vanilla JS** for zero-infrastructure deployment.
 
 ---
 
